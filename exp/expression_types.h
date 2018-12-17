@@ -53,21 +53,21 @@ public:
  */
 class BinaryExpression : public Expression {
 private:
-    Expression& left;  // the first expression
-    Expression& right;  // the second expression
+    Expression& _left;  // the first expression
+    Expression& _right;  // the second expression
 
 public:
-    BinaryExpression(Expression& exp1, Expression& exp2) : left(exp1), right(exp2) {}
+    BinaryExpression(Expression& exp1, Expression& exp2) : _left(exp1), _right(exp2) {}
 
     virtual double calculate(variables assignment) throw (Exception) = 0;
 
 protected:
     Expression& getLeftExpresion() {
-        return this->left;
+        return this->_left;
     }
 
     Expression& getRightExpresion() {
-        return this->right;
+        return this->_right;
     }
 };
 
