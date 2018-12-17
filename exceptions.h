@@ -2,9 +2,10 @@
 #define PROJECT_EXCEPTIONS_H
 
 #include <iostream>
+#include <string>
 
 struct Exception {
-    Exception(const string& msg) {
+    Exception(const std::string& msg) {
         std::cout << msg << std::endl;
     }
 };
