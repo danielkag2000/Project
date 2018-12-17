@@ -3,11 +3,10 @@
 
 void variable::saveData() {
     cout << "Saved Data!" << endl;
-    int x;
 }
 
 void variable::retrieveData() {
-
+    cout << "Retrieved data from server!" << endl;
 }
 
 void variable::bind(const string &handle) {
@@ -30,4 +29,8 @@ double variable::getValue() {
 void variable::setValue(double val) {
     _val = val;
     saveData();
+}
+
+void symbol_table::unbind(const string &name) {
+
 }

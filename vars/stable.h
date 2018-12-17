@@ -22,7 +22,6 @@ public:
 };
 
 class symbol_table {
-    using namespace std;
 private:
     unordered_map<string, variable> _vars;
 public:
