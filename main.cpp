@@ -7,6 +7,5 @@ int main() {
     cout << "Hi there! are u a loli-lover? ;D" << endl;
 
     cout << "8===D" << endl;
-
     return 0;
 }
