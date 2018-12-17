@@ -2,7 +2,7 @@
 #include <queue>
 #include <stack>
 
-vector<string> run_shunting_yard(operators op_map, vector<string> tokens) {
+vector<string> run_shunting_yard(operators op_map, vector<string> tokens){
 
     // "number" is a non operator
     queue<string> _numbers;

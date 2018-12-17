@@ -6,8 +6,15 @@
 #include <exception>
 
 struct Exception : public std::exception {
+
+public:
     Exception(const std::string& msg) {
         std::cout << msg << std::endl;
+    }
+
+    virtual const char* what() const throw()
+    {
+        return "exception occur";
     }
 };
 
@@ -19,7 +26,6 @@ struct VarUndefinedException : public Exception {
 struct ArithmeticException : public Exception {
     ArithmeticException(const std::string& msg) :
         Exception("Arithmetic Exception: " + msg) {
-
     }
 };
 
@@ -32,14 +38,12 @@ struct DivisionByZeroException : public ArithmeticException {
 struct SyntaxException : public Exception {
     SyntaxException(const std::string& msg) :
         Exception("Syntax Exception: " + msg) {
-
     }
 };
 
 struct InvalidParenthesisOrder : public SyntaxException {
     InvalidParenthesisOrder() :
         SyntaxException("Invalid parenthesis order inserted!") {
-
     }
 };
 
