@@ -9,6 +9,8 @@ file(GLOB SOURCES
         exp/exp.h
         exp/expression_types.h
         main.cpp
-        exceptions.h)
+        exceptions.h
+        algorithms/shunting_yard_algorithm.h
+        algorithms/shunting_yard_algorithm.cpp)
 
 add_executable(Project ${SOURCES})
