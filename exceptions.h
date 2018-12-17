@@ -10,4 +10,22 @@ struct Exception {
     }
 };
 
+struct VarUndefinedException : public Exception {
+    VarUndefinedException(const std::string& var) :
+        Exception("variable: " + var + " , not found!") { }
+};
+
+struct ArithmeticException : public Exception {
+    ArithmeticException(const std::string& msg) :
+        Exception("Arithmetic Exception: " + msg) {
+
+    }
+};
+
+struct DivisionByZeroException : public ArithmeticException {
+    DivisionByZeroException() :
+        ArithmeticException("can not divide by zero!") {
+    }
+};
+
 #endif //PROJECT_EXCEPTIONS_H

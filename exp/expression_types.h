@@ -41,7 +41,7 @@ public:
         variables::const_iterator got = assignment.find(this->var);
 
         if (got == assignment.end()) {
-            throw Exception("variable: " + this->var + " , not found!");
+            throw VarUndefinedException(this->var);
         }
 
         return (*got).second;
@@ -109,7 +109,7 @@ public:
         double rightCalc = getRightExpresion().calculate(assignment);
 
         if (rightCalc == 0) {
-            throw Exception("Arithmetical Exception: can not divide by zero!");
+            throw DivisionByZeroException();
         }
 
         return getLeftExpresion().calculate(assignment) / rightCalc;
