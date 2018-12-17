@@ -28,4 +28,18 @@ struct DivisionByZeroException : public ArithmeticException {
     }
 };
 
+struct SyntaxException : public Exception {
+    SyntaxException(const std::string& msg) :
+        Exception("Syntax Exception: " + msg) {
+
+    }
+};
+
+struct InvalidParenthesisOrder : public SyntaxException {
+    InvalidParenthesisOrder() :
+        SyntaxException("Invalid parenthesis order inserted!") {
+
+    }
+};
+
 #endif //PROJECT_EXCEPTIONS_H

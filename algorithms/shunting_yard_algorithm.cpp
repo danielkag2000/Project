@@ -2,7 +2,7 @@
 #include <queue>
 #include <stack>
 
-vector<string> run_shunting_yard(operators op_map, vector<string> tokens) throw (Exception) {
+vector<string> run_shunting_yard(operators op_map, vector<string> tokens) throw (SyntaxException) {
 
     // "number" is a non operator
     queue<string> _numbers;
@@ -28,7 +28,7 @@ vector<string> run_shunting_yard(operators op_map, vector<string> tokens) throw 
             }
             // there is no ")" so there is a problem
             if (_operators.empty()) {
-                throw Exception("Syntex Exception: invalid Parenthesis order");
+                throw InvalidParenthesisOrder();
             }
             _operators.pop();
 
@@ -56,9 +56,9 @@ vector<string> run_shunting_yard(operators op_map, vector<string> tokens) throw 
     }
 
     // check the parenthesis
-    for (string s: result) {
+    for (string& s : result) {
         if (s == "(" || s == ")") {
-            throw Exception("Syntex Exception: invalid Parenthesis order");
+            throw InvalidParenthesisOrder();
         }
     }
 
