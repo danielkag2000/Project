@@ -13,4 +13,4 @@ file(GLOB SOURCES
         algorithms/shunting_yard_algorithm.h
         algorithms/shunting_yard_algorithm.cpp)
 
-add_executable(Project ${SOURCES})
+add_executable(Project ${SOURCES} vars/data_reader_server.cpp vars/data_reader_server.h algorithms/lexer.cpp algorithms/lexer.h)

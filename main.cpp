@@ -1,6 +1,7 @@
 #include <iostream>
 
 #include "vars/stable.h"
+#include "algorithms/lexer.h"
 
 using namespace std;
 
@@ -12,5 +13,17 @@ int main() {
 
     cout << table.get("hello") << endl;
     cout << sizeof(string) << endl;
+
+
+
+    string str;
+    getline(cin, str);
+
+    vector<string> v = lexer(str);
+
+    for(string &s : v) {
+        cout << s << endl;
+    }
+
     return 0;
 }
