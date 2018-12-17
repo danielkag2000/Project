@@ -4,8 +4,8 @@
 #include <iostream>
 #include <string>
 
-struct exception {
-    exception(const std::string& msg) {
+struct Exception {
+    Exception(const std::string& msg) {
         std::cout << msg << std::endl;
     }
 };

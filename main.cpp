@@ -1,10 +1,12 @@
 #include <iostream>
 
+#include "vars/stable.h"
+
 using namespace std;
 
 int main() {
-    cout << "Hello, World!" << endl;
-    cout << "Hi there! are u a loli-lover? ;D" << endl;
-    cout << "8===D" << endl;
+    SymbolTable table;
+    table.set("hello", 4.3);
+    table.bind("hello", "fuck/you");
     return 0;
 }

@@ -1,36 +1,54 @@
 #include "stable.h"
 #include <iostream>
 
-void variable::saveData() {
-    cout << "Saved Data!" << endl;
-}
 
-void variable::retrieveData() {
-    cout << "Retrieved data from server!" << endl;
-}
-
-void variable::bind(const string &handle) {
-    _handle = handle;
-
-    if (!handle.empty()) {
-        retrieveData();
+void Variable::saveData() {
+    if (bound()) {
+        cout << "Saved Data!" << endl;
     }
 }
 
-void variable::unbind() {
+void Variable::retrieveData() {
+    if (bound()) {
+        cout << "Retrieved data from server!" << endl;
+    }
+}
+
+bool Variable::bound() {
+    return !_handle.empty();
+}
+
+void Variable::bind(const string &handle) {
+    _handle = handle;
+    retrieveData();
+}
+
+void Variable::unbind() {
     _handle = "";
 }
 
-double variable::getValue() {
+double Variable::getValue() {
     retrieveData();
     return _val;
 }
 
-void variable::setValue(double val) {
+void Variable::setValue(double val) {
     _val = val;
     saveData();
 }
 
-void symbol_table::unbind(const string &name) {
+void SymbolTable::bind(const string &name, const string &handle) {
+    _vars[name].bind(handle);
+}
 
+void SymbolTable::unbind(const string &name) {
+    _vars[name].unbind();
+}
+
+void SymbolTable::set(const string &name, double val) {
+    _vars[name].setValue(val);
+}
+
+double SymbolTable::get(const string &name) {
+    return _vars[name].getValue();
 }
