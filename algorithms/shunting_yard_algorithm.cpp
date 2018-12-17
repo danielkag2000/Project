@@ -23,8 +23,8 @@ vector<string> run_shunting_yard(operators op_map, vector<string> tokens) throw 
 
         } else if (token == ")") {
             while (_operators.top() != "(" && !_operators.empty()) {
-                _numbers.push(_operators.pop());
-
+                _numbers.push(_operators.top());
+                _operators.pop();
             }
             // there is no ")" so there is a problem
             if (_operators.empty()) {
@@ -36,8 +36,8 @@ vector<string> run_shunting_yard(operators op_map, vector<string> tokens) throw 
         } else {
             // while there is an operator at the top of the stack with greater precedence
             while (!_operators.empty() && (op_map[token] < op_map[_operators.top()])) {
-                _numbers.push(_operators.pop());
-
+                _numbers.push(_operators.top());
+                _operators.pop();
             }
             _operators.push(token);
         }
@@ -45,14 +45,14 @@ vector<string> run_shunting_yard(operators op_map, vector<string> tokens) throw 
 
     // while there is an operator at the top of the
     while (!_operators.empty()) {
-        _numbers.push(_operators.pop());
-
+        _numbers.push(_operators.top());
+        _operators.pop();
     }
 
     // get all the values to the result
     while (!_numbers.empty()) {
-        result.push_back(_numbers.pop());
-
+        result.push_back(_numbers.front());
+        _numbers.pop();
     }
 
     // check the parenthesis
