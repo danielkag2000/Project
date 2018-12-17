@@ -3,16 +3,17 @@
 
 #include <unordered_map>
 #include <string>
-#include "exceptions.h"
+#include "../exceptions.h"
 
-typedef unordered_map<string, double> variables;
 using namespace std;
+typedef unordered_map<string, double> variables;
+
 
 /**
  * Expression is a mat Mathematical Expressions
  * with arguments and sings.
  */
-class expression {
+class Expression {
 public:
 
     /**
@@ -24,7 +25,7 @@ public:
      *         which is not in the assignment, an exception
      *         is thrown.
      */
-    double calculate() throw {exception} final {
+    virtual double calculate() throw (Exception) final {
         return calculate(variables());
     }
 
@@ -38,7 +39,7 @@ public:
      *         which is not in the assignment, an exception
      *         is thrown.
      */
-    virtual double calculate(variables assignment) throw {exception} = 0;
+    virtual double calculate(variables assignment) throw (Exception) = 0;
 };
 
 
