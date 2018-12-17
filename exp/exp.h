@@ -8,7 +8,7 @@
 typedef unordered_map<string, double> variables;
 using namespace std;
 
-class Expression {
+class expression {
 public:
 
     /**
@@ -20,7 +20,7 @@ public:
      *         which is not in the assignment, an exception
      *         is thrown.
      */
-    double calculate() throw {Exception} final {
+    double calculate() throw {exception} final {
         return calculate(variables());
     }
 
@@ -34,7 +34,7 @@ public:
      *         which is not in the assignment, an exception
      *         is thrown.
      */
-    virtual double calculate(variables assignment) throw {Exception} = 0;
+    virtual double calculate(variables assignment) throw {exception} = 0;
 };
 
 
