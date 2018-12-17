@@ -6,6 +6,8 @@ set(CMAKE_CXX_STANDARD 11)
 file(GLOB SOURCES
         vars/stable.cpp
         vars/stable.h
+        exp/exp.h
+        exp/expression_types.h
         main.cpp
         exceptions.h)
 
