@@ -12,7 +12,7 @@ struct Exception {
 
 struct VarUndefinedException : public Exception {
     VarUndefinedException(const std::string& var) :
-        Exception("variable: " + var + " , not found!") { }
+        Exception("Exception: variable: " + var + " , not found!") { }
 };
 
 struct ArithmeticException : public Exception {
