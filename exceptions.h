@@ -3,8 +3,9 @@
 
 #include <iostream>
 #include <string>
+#include <exception>
 
-struct Exception {
+struct Exception : public std::exception {
     Exception(const std::string& msg) {
         std::cout << msg << std::endl;
     }
