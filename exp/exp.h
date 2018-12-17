@@ -8,6 +8,10 @@
 typedef unordered_map<string, double> variables;
 using namespace std;
 
+/**
+ * Expression is a mat Mathematical Expressions
+ * with arguments and sings.
+ */
 class expression {
 public:
 
