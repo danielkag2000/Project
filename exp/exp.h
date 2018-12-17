@@ -3,7 +3,7 @@
 
 class Expression {
 public:
-
+    virtual int calculate() = 0;
 };
 
 #endif //PROJECT_EXP_H
