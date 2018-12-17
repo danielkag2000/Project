@@ -6,10 +6,13 @@
 
 using namespace std;
 
-class Variable {
+class variable {
 private:
     double _val;
     string _handle;
+
+    void saveData();
+    void retrieveData();
 public:
     double getValue();
     void setValue(double val);
@@ -21,10 +24,13 @@ public:
 class symbol_table {
     using namespace std;
 private:
-    unordered_map<string, Variable> _vals;
+    unordered_map<string, variable> _vars;
 public:
     void set(const string& name, double val);
     double get(const string& name);
+
+    void bind(const string& name, const string& handle);
+    void unbind(const string& name);
 };
 
 

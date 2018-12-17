@@ -3,4 +3,10 @@ project(Project)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(Project main.cpp)
+file(GLOB SOURCES
+        vars/stable.cpp
+        vars/stable.h
+        main.cpp
+        exceptions.h)
+
+add_executable(Project ${SOURCES})
