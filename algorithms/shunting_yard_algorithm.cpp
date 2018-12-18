@@ -2,7 +2,7 @@
 #include <queue>
 #include <stack>
 
-vector<string> run_shunting_yard(operators op_map, vector<string> tokens) throw (SyntaxException) {
+vector<string> run_shunting_yard(operators op_map, vector<string> tokens){
 
     // "number" is a non operator
     queue<string> _numbers;
@@ -12,7 +12,7 @@ vector<string> run_shunting_yard(operators op_map, vector<string> tokens) throw 
     vector<string> result;
 
     // read all the tokens
-    for (string token: tokens) {
+    for (string& token: tokens) {
 
         // if the token is number
         if (op_map.find(token) == op_map.end()) {
