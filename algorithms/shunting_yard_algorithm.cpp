@@ -12,7 +12,7 @@ vector<string> run_shunting_yard(operators op_map, vector<string> tokens){
     vector<string> result;
 
     // read all the tokens
-    for (string& token: tokens) {
+    for (const string& token: tokens) {
         // if the token is number
         if (token == "(") {
             _operators.push(token);
@@ -55,7 +55,7 @@ vector<string> run_shunting_yard(operators op_map, vector<string> tokens){
     }
 
     // check the parenthesis
-    for (string& s : result) {
+    for (const string& s : result) {
         if (s == "(" || s == ")") {
             throw InvalidParenthesisOrder();
         }

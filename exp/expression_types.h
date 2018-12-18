@@ -75,6 +75,7 @@ class Plus : public BinaryExpression {
 public:
     Plus(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
 
+protected:
     virtual double operation(double x, double y) { return x + y; }
 };
 
@@ -86,6 +87,7 @@ class Minus : public BinaryExpression {
 public:
     Minus(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
 
+protected:
     virtual double operation(double x, double y) {
         return x - y;
     }
@@ -99,6 +101,7 @@ class Div : public BinaryExpression {
 public:
     Div(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
 
+protected:
     virtual double operation(double x, double y) {
         if (y == 0) {
             throw DivisionByZeroException();
@@ -116,8 +119,40 @@ class Mul : public BinaryExpression {
 public:
     Mul(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
 
+protected:
     virtual double operation(double x, double y) {
         return x * y;
+    }
+};
+
+/**
+ * represent a unary Expression.
+ */
+class UnaryExpression : public Expression {
+private:
+    Expression& _exp;  // the first expression
+
+protected:
+    virtual double operation(double x) = 0;
+
+public:
+    UnaryExpression(Expression& exp) : _exp(exp) {}
+
+    virtual double calculate(variables assignment) throw (Exception) final {
+        return operation(_exp.calculate(assignment));
+    }
+};
+
+/**
+ * represent a negative Expression.
+ */
+class Neg : public UnaryExpression {
+public:
+    Neg(Expression& exp) : UnaryExpression(exp) {}
+
+protected:
+    virtual double operation(double x) {
+        return -1 * x;
     }
 };
 
