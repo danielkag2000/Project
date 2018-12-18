@@ -26,7 +26,7 @@ int main() {
     vector<string> postfix = run_shunting_yard(ops, v);
 
     for (string& s : postfix) {
-        cout << s << "";
+        cout << s << " ";
     }
     cout << endl;
 

@@ -13,12 +13,8 @@ vector<string> run_shunting_yard(operators op_map, vector<string> tokens){
 
     // read all the tokens
     for (string& token: tokens) {
-
         // if the token is number
-        if (op_map.find(token) == op_map.end()) {
-            _numbers.push(token);
-
-        } else if (token == "(") {
+        if (token == "(") {
             _operators.push(token);
 
         } else if (token == ")") {
@@ -33,7 +29,10 @@ vector<string> run_shunting_yard(operators op_map, vector<string> tokens){
             _operators.pop();
 
         // is an operator
-        } else {
+        } else if (op_map.find(token) == op_map.end()) {
+            _numbers.push(token);
+
+        } else {  // is an operator from the list
             // while there is an operator at the top of the stack with greater precedence
             while (!_operators.empty() && (op_map[token] < op_map[_operators.top()])) {
                 _numbers.push(_operators.top());
