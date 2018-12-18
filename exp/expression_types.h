@@ -56,18 +56,14 @@ private:
     Expression& _left;  // the first expression
     Expression& _right;  // the second expression
 
+protected:
+    virtual double operation(double x, double y) = 0;
+
 public:
     BinaryExpression(Expression& exp1, Expression& exp2) : _left(exp1), _right(exp2) {}
 
-    virtual double calculate(variables assignment) throw (Exception) = 0;
-
-protected:
-    Expression& getLeftExpresion() {
-        return this->_left;
-    }
-
-    Expression& getRightExpresion() {
-        return this->_right;
+    virtual double calculate(variables assignment) throw (Exception) final {
+        return operation(_left.calculate(assignment), _right.calculate(assignment));
     }
 };
 
@@ -79,9 +75,7 @@ class Plus : public BinaryExpression {
 public:
     Plus(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
 
-    virtual double calculate(variables assignment) throw (Exception) {
-        return getLeftExpresion().calculate(assignment) + getRightExpresion().calculate(assignment);
-    }
+    virtual double operation(double x, double y) { return x + y; }
 };
 
 /**
@@ -92,8 +86,8 @@ class Minus : public BinaryExpression {
 public:
     Minus(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
 
-    virtual double calculate(variables assignment) throw (Exception) {
-        return getLeftExpresion().calculate(assignment) - getRightExpresion().calculate(assignment);
+    virtual double operation(double x, double y) {
+        return x - y;
     }
 };
 
@@ -105,14 +99,12 @@ class Div : public BinaryExpression {
 public:
     Div(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
 
-    virtual double calculate(variables assignment) throw (Exception) {
-        double rightCalc = getRightExpresion().calculate(assignment);
-
-        if (rightCalc == 0) {
+    virtual double operation(double x, double y) {
+        if (y == 0) {
             throw DivisionByZeroException();
         }
 
-        return getLeftExpresion().calculate(assignment) / rightCalc;
+        return x / y;
     }
 };
 
@@ -124,8 +116,8 @@ class Mul : public BinaryExpression {
 public:
     Mul(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
 
-    virtual double calculate(variables assignment) throw (Exception) {
-        return getLeftExpresion().calculate(assignment) * getRightExpresion().calculate(assignment);
+    virtual double operation(double x, double y) {
+        return x * y;
     }
 };
 
