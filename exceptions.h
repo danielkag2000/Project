@@ -6,15 +6,16 @@
 #include <exception>
 
 struct Exception : public std::exception {
-
+private:
+    std::string _msg;
 public:
     Exception(const std::string& msg) {
         std::cout << msg << std::endl;
+        _msg = msg;
     }
 
-    virtual const char* what() const throw()
-    {
-        return "exception occur";
+    virtual const char* what() const throw() {
+        return _msg.c_str();
     }
 };
 

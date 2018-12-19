@@ -6,9 +6,9 @@
 #include <string>
 #include <unordered_map>
 #include "../exceptions.h"
+#include "definitions.h"
 
 using namespace std;
-typedef unordered_map<string, int> operators;
 
 /**
  * the Shunting Yard algorithm

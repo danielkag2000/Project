@@ -22,6 +22,11 @@ int main() {
 
     vector<string> v = lexer(str);
 
+    for (string& s : v) {
+        cout << s << ", ";
+    }
+    cout << endl;
+
     operators ops{ { "+", 1 }, { "-", 1 }, { "*", 2 }, { "/", 2 } };
     vector<string> postfix = run_shunting_yard(ops, v);
 
