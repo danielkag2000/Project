@@ -5,25 +5,28 @@
 /*
  * variables    [a-zA-Z_][a-zA-Z_0-9]*
  *  strings     \".*\"
- *  literals    \d+(\.\d+)*
+ *  literals    (((?<=\s)\-)?\d+(\.\d+)*)
  *  keywords    [a-zA-Z_][a-zA-Z_0-9]*
  *  symbols     \+|\-|\*|\/|\=\=|\=|\<\=|\<|\>\=|\>|\(|\)|\{|\}
  *
- *  total:      ([a-zA-Z_][a-zA-Z_0-9]*)|(\".*\")|(\d+(\.\d+)*)|(\+|\-|\*|\/|\=\=|\=|\<\=|\<|\>\=|\>|\(|\)|\{|\})
+ *  total:      ([a-zA-Z_][a-zA-Z_0-9]*)|(\".*\")|(((?<=\s)\-)?\d+(\.\d+)*)|(\+|\-|\*|\/|\=\=|\=|\<\=|\<|\>\=|\>|\(|\)|\{|\})|( |,)
  */
 
 #define KEYVARS     0
 #define STRINGS     1
 #define LITERALS    2
 #define SYMBOLS     3
-#define WHITESPACE  4
+#define WHITESPACE  8
 
 string regex_separator =
-        "([a-zA-Z_][a-zA-Z_0-9]*)"      // variables & keywords
-        "|(\\\".*\\\")"                 // strings
-        "|(\\d+(\\.\\d+)*)"             // literals
-        "|(\\+|\\-|\\*|\\/|\\=\\=|\\=|\\<\\=|\\<|\\>\\=|\\>|\\(|\\)|\\{|\\})" // symbols
-        "|( |,)";
+        "|([a-zA-Z_][a-zA-Z_0-9]*)"                 // variables & keywords
+        "|(\\\".*\\\")"                             // strings
+        "|(\\d+(\\.\\d+)*)"                         // literals
+        // symbols
+        "|(\\+|\\-|\\*|\\/|\\=\\=|\\=|\\<\\=|\\<|\\>\\=|\\>|\\(|\\)|\\{|\\})"
+
+        "|([ ,]+)"                                    // whitespaces
+        ;
 
 // (, x, +, 3, ), *, -, 4,
 
@@ -96,6 +99,7 @@ vector<string> lexer(const string &line) {
 
         if (groupMatched(match, WHITESPACE)) {
             prev_whitespace = true;
+            continue;
         } else {
             prev_whitespace = false;
         }

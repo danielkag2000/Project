@@ -28,7 +28,9 @@ int main() {
     cout << endl;
 
     operators ops{ { "+", 1 }, { "-", 1 }, { "*", 2 }, { "/", 2 } };
+    cout << "running boi" << endl;
     vector<string> postfix = run_shunting_yard(ops, v);
+    cout << "finished running" << endl;
 
     for (string& s : postfix) {
         cout << s << " ";

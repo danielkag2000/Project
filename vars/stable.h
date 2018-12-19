@@ -53,6 +53,8 @@ class SymbolTable {
 private:
     unordered_map<string, Variable> _vars;
 public:
+    bool exists(const string& name);
+
     void bind(const string& name, const string& handle);
     void unbind(const string& name);
 
