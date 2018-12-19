@@ -7,7 +7,7 @@
 /**
  * represent a number Expression.
  */
-class Num {
+class Num  : public Expression {
 private:
     double number;
 
@@ -20,7 +20,7 @@ public:
         this->number = stod(num);
     }
 
-    virtual double calculate(variables assignment) throw (Exception) {
+    virtual double calculate(variables assignment) {
         return this->number;
     }
 };
@@ -28,7 +28,7 @@ public:
 /**
  * represent a variable Expression.
  */
-class Var {
+class Var : public Expression {
 private:
     string var;
 
@@ -37,7 +37,7 @@ public:
         this->var = variable;
     }
 
-    virtual double calculate(variables assignment) throw (Exception) {
+    virtual double calculate(variables assignment) {
         variables::const_iterator got = assignment.find(this->var);
 
         if (got == assignment.end()) {
@@ -53,22 +53,25 @@ public:
  */
 class BinaryExpression : public Expression {
 private:
-    Expression& _left;  // the first expression
-    Expression& _right;  // the second expression
+    Expression* _left;  // the first expression
+    Expression* _right;  // the second expression
 
 protected:
     virtual double operation(double x, double y) = 0;
 
 public:
-    BinaryExpression(Expression& exp1, Expression& exp2) : _left(exp1), _right(exp2) {}
+    BinaryExpression(Expression* exp1, Expression* exp2) {
+        this->_left = exp1;
+        this->_right = exp2;
+    }
 
-    virtual double calculate(variables assignment) throw (Exception) final {
-        return operation(_left.calculate(assignment), _right.calculate(assignment));
+    virtual double calculate(variables assignment) final {
+        return operation(_left->calculate(assignment), _right->calculate(assignment));
     }
 
     virtual ~BinaryExpression() {
-        delete &_left;
-        delete &_right;
+        delete _left;
+        delete _right;
     }
 };
 
@@ -78,7 +81,7 @@ public:
 class Plus : public BinaryExpression {
 
 public:
-    Plus(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
+    Plus(Expression* exp1, Expression* exp2) : BinaryExpression(exp1, exp2) {}
 
 protected:
     virtual double operation(double x, double y) { return x + y; }
@@ -90,7 +93,7 @@ protected:
 class Minus : public BinaryExpression {
 
 public:
-    Minus(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
+    Minus(Expression* exp1, Expression* exp2) : BinaryExpression(exp1, exp2) {}
 
 protected:
     virtual double operation(double x, double y) {
@@ -104,7 +107,7 @@ protected:
 class Div : public BinaryExpression {
 
 public:
-    Div(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
+    Div(Expression* exp1, Expression* exp2) : BinaryExpression(exp1, exp2) {}
 
 protected:
     virtual double operation(double x, double y) {
@@ -122,7 +125,7 @@ protected:
 class Mul : public BinaryExpression {
 
 public:
-    Mul(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
+    Mul(Expression* exp1, Expression* exp2) : BinaryExpression(exp1, exp2) {}
 
 protected:
     virtual double operation(double x, double y) {
@@ -139,7 +142,7 @@ protected:
     virtual double operation(double x, double y) = 0;
 
 public:
-    BooleanExpression(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
+    BooleanExpression(Expression* exp1, Expression* exp2) : BinaryExpression(exp1, exp2) {}
 };
 
 /**
@@ -147,7 +150,7 @@ public:
  */
 class Greater : public BooleanExpression {
 public:
-    Greater(Expression& exp1, Expression& exp2) : BooleanExpression(exp1, exp2) {}
+    Greater(Expression* exp1, Expression* exp2) : BooleanExpression(exp1, exp2) {}
 
 protected:
     virtual double operation(double x, double y) {
@@ -160,7 +163,7 @@ protected:
  */
 class Less : public BooleanExpression {
 public:
-    Less(Expression& exp1, Expression& exp2) : BooleanExpression(exp1, exp2) {}
+    Less(Expression* exp1, Expression* exp2) : BooleanExpression(exp1, exp2) {}
 
 protected:
     virtual double operation(double x, double y) {
@@ -173,7 +176,7 @@ protected:
  */
 class GreaterEqual : public BooleanExpression {
 public:
-    GreaterEqual(Expression& exp1, Expression& exp2) : BooleanExpression(exp1, exp2) {}
+    GreaterEqual(Expression* exp1, Expression* exp2) : BooleanExpression(exp1, exp2) {}
 
 protected:
     virtual double operation(double x, double y) {
@@ -186,7 +189,7 @@ protected:
  */
 class LessEqual : public BooleanExpression {
 public:
-    LessEqual(Expression& exp1, Expression& exp2) : BooleanExpression(exp1, exp2) {}
+    LessEqual(Expression* exp1, Expression* exp2) : BooleanExpression(exp1, exp2) {}
 
 protected:
     virtual double operation(double x, double y) {
@@ -199,7 +202,7 @@ protected:
  */
 class Equal : public BooleanExpression {
 public:
-    Equal(Expression& exp1, Expression& exp2) : BooleanExpression(exp1, exp2) {}
+    Equal(Expression* exp1, Expression* exp2) : BooleanExpression(exp1, exp2) {}
 
 protected:
     virtual double operation(double x, double y) {
@@ -212,7 +215,7 @@ protected:
  */
 class NotEqual : public BooleanExpression {
 public:
-    NotEqual(Expression& exp1, Expression& exp2) : BooleanExpression(exp1, exp2) {}
+    NotEqual(Expression* exp1, Expression* exp2) : BooleanExpression(exp1, exp2) {}
 
 protected:
     virtual double operation(double x, double y) {

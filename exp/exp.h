@@ -25,7 +25,7 @@ public:
      *         which is not in the assignment, an exception
      *         is thrown.
      */
-    virtual double calculate() throw (Exception) final {
+    virtual double calculate() final {
         return calculate(variables());
     }
 
@@ -39,7 +39,9 @@ public:
      *         which is not in the assignment, an exception
      *         is thrown.
      */
-    virtual double calculate(variables assignment) throw (Exception) = 0;
+    virtual double calculate(variables assignment) = 0;
+
+    virtual ~Expression() {}
 };
 
 

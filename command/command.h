@@ -7,7 +7,7 @@
 class command {
 
 public:
-    double doCommand() = 0;
+    virtual double doCommand() = 0;
 };
 
 #endif //PROJECT_COMMAND_H
