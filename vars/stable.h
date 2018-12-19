@@ -60,6 +60,8 @@ public:
     void set(const string& var, double val);
 
     double get(const string& name);
+
+    unordered_map<string, double> asMap();
 };
 
 
