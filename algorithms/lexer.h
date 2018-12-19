@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-#include "definitions.h"
+#include "../definitions.h"
 
 using namespace std;
 

@@ -6,7 +6,7 @@
 #include <string>
 #include <unordered_map>
 #include "../exceptions.h"
-#include "definitions.h"
+#include "../definitions.h"
 
 using namespace std;
 
