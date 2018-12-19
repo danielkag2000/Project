@@ -65,6 +65,11 @@ public:
     virtual double calculate(variables assignment) throw (Exception) final {
         return operation(_left.calculate(assignment), _right.calculate(assignment));
     }
+
+    virtual ~BinaryExpression() {
+        delete &_left;
+        delete &_right;
+    }
 };
 
 /**
@@ -126,33 +131,92 @@ protected:
 };
 
 /**
- * represent a unary Expression.
+ * represent a boolean Expression.
  */
-class UnaryExpression : public Expression {
-private:
-    Expression& _exp;  // the first expression
+class BooleanExpression : public BinaryExpression {
 
 protected:
-    virtual double operation(double x) = 0;
+    virtual double operation(double x, double y) = 0;
 
 public:
-    UnaryExpression(Expression& exp) : _exp(exp) {}
+    BooleanExpression(Expression& exp1, Expression& exp2) : BinaryExpression(exp1, exp2) {}
+};
 
-    virtual double calculate(variables assignment) throw (Exception) final {
-        return operation(_exp.calculate(assignment));
+/**
+ * represent a boolean Expression greater than.
+ */
+class Greater : public BooleanExpression {
+public:
+    Greater(Expression& exp1, Expression& exp2) : BooleanExpression(exp1, exp2) {}
+
+protected:
+    virtual double operation(double x, double y) {
+        return x > y;
     }
 };
 
 /**
- * represent a negative Expression.
+ * represent a boolean Expression less than.
  */
-class Neg : public UnaryExpression {
+class Less : public BooleanExpression {
 public:
-    Neg(Expression& exp) : UnaryExpression(exp) {}
+    Less(Expression& exp1, Expression& exp2) : BooleanExpression(exp1, exp2) {}
 
 protected:
-    virtual double operation(double x) {
-        return -1 * x;
+    virtual double operation(double x, double y) {
+        return x < y;
+    }
+};
+
+/**
+ * represent a boolean Expression greater equal.
+ */
+class GreaterEqual : public BooleanExpression {
+public:
+    GreaterEqual(Expression& exp1, Expression& exp2) : BooleanExpression(exp1, exp2) {}
+
+protected:
+    virtual double operation(double x, double y) {
+        return x >= y;
+    }
+};
+
+/**
+ * represent a boolean Expression less equal.
+ */
+class LessEqual : public BooleanExpression {
+public:
+    LessEqual(Expression& exp1, Expression& exp2) : BooleanExpression(exp1, exp2) {}
+
+protected:
+    virtual double operation(double x, double y) {
+        return x <= y;
+    }
+};
+
+/**
+ * represent a boolean Expression equal to.
+ */
+class Equal : public BooleanExpression {
+public:
+    Equal(Expression& exp1, Expression& exp2) : BooleanExpression(exp1, exp2) {}
+
+protected:
+    virtual double operation(double x, double y) {
+        return x == y;
+    }
+};
+
+/**
+ * represent a boolean Expression not equal to.
+ */
+class NotEqual : public BooleanExpression {
+public:
+    NotEqual(Expression& exp1, Expression& exp2) : BooleanExpression(exp1, exp2) {}
+
+protected:
+    virtual double operation(double x, double y) {
+        return x != y;
     }
 };
 

@@ -11,6 +11,11 @@ file(GLOB SOURCES
         main.cpp
         exceptions.h
         algorithms/shunting_yard_algorithm.h
-        algorithms/shunting_yard_algorithm.cpp)
+        algorithms/shunting_yard_algorithm.cpp
+        algorithms/parsing.cpp
+        algorithms/parsing.h
+        command/command_expression.h
+        command/command.h
+        definitions.h)
 
 add_executable(Project ${SOURCES} vars/data_reader_server.cpp vars/data_reader_server.h algorithms/lexer.cpp algorithms/lexer.h definitions.h)

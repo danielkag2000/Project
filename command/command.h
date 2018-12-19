@@ -7,7 +7,7 @@
 class command {
 
 public:
-    double doCommand(SymbolTable var_table, vector<string> tokens) = 0;
+    double doCommand() = 0;
 };
 
 #endif //PROJECT_COMMAND_H
