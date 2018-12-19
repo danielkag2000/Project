@@ -33,7 +33,9 @@ void Variable::set(double val) {
     saveData();
 }
 
-
+bool SymbolTable::exists(const string &name) {
+    return _vars.find(name) != _vars.end();
+}
 
 void SymbolTable::bind(const string &var, const string &handle) {
     _vars[var].bind(handle);
@@ -53,4 +55,14 @@ void SymbolTable::set(const string &var, double val) {
 
 double SymbolTable::get(const string &name) {
     return _vars[name].get();
+}
+
+unordered_map<string, double> SymbolTable::asMap() {
+    unordered_map<string, double> m;
+
+    for (pair<string, Variable> pair : _vars) {
+        m.insert({ pair.first, pair.second.get() });
+    }
+
+    return m;
 }
