@@ -5,6 +5,9 @@
 #include "../exp/expression_types.h"
 #include "../command/command.h"
 #include "../command/simple_commands.h"
+#include "lexer.h"
+#include "shunting_yard_algorithm.h"
+#include "../command/complicate_commands.h"
 #include <regex>
 #include <algorithm>
 
@@ -12,6 +15,7 @@ Expression* complicate_expression(const vector<string>& parameters, SymbolTable&
 Expression* base_expression(SymbolTable& var_table, const string& op);
 
 Expression* parsing(operators op_table, SymbolTable& var_table, vector<string> tokens) {
+
     //the parameters to the function
     vector<string> parameters;
     // the "numbers are the non operators
@@ -21,14 +25,13 @@ Expression* parsing(operators op_table, SymbolTable& var_table, vector<string> t
 
     for(int i = 0; i < number_of_tokens - 1; i++) {
         token = tokens[i];
-
         // if it is not an operator
         if (op_table.find(token) == op_table.end()) {
             numbers.push(token);
 
         } else { // it is an operator
 
-            int parm_num = op_table[token];
+            int parm_num = op_table.find(token)->second;
             for (int j = 0; j < parm_num; j++) {
                 if (numbers.empty()) {
                     throw SyntaxException("too few parameters");
@@ -41,7 +44,9 @@ Expression* parsing(operators op_table, SymbolTable& var_table, vector<string> t
             Expression* exp = parser(parameters, var_table, token);
             double res = exp->calculate(var_table);
             if (res != NAN) {
-                numbers.push(exp->returnValue(var_table));
+                if (exp->returnValue(var_table) != "") {
+                    numbers.push(exp->returnValue(var_table));
+                }
             }
             parameters.clear();
             delete exp;
@@ -55,7 +60,7 @@ Expression* parsing(operators op_table, SymbolTable& var_table, vector<string> t
         throw SyntaxException("too many parameters");
     }
 
-    int param_num = op_table[token];
+    int param_num = op_table.find(token)->second;
     for (int i = 0; i < param_num; i++) {
         if (numbers.empty()) {
             throw SyntaxException("too few parameters");
@@ -97,12 +102,19 @@ Expression* parser(vector<string> parameters, SymbolTable& var_table, string fun
         return result;
     }
 
-    if (func_operator == "Var") {
+    if (func_operator == "var") {
         return new CommandExpression(new VarCommand(parameters[0]));
     }
 
     if (func_operator == "=bind" || func_operator == "bind") {
         return new CommandExpression(new BindCommand(parameters[0], parameters[1]));
+    }
+
+    if (func_operator == "print") {
+        Expression* exp = base_expression(var_table, parameters[0]);
+        Expression* result = new CommandExpression(new PrintCommand(exp->calculate(var_table)));
+        delete exp;
+        return result;
     }
 
     return nullptr;
@@ -153,4 +165,34 @@ Expression* base_expression(SymbolTable& var_table, const string& op) {
         }
 
         throw SyntaxException("bad expression");
+}
+
+
+
+Expression* parser_complicate(string op, vector<string> lex_bool_exp, vector<string> commands, operators op_table, operators cost) {
+
+    if (op == "while") {
+        return new CommandExpression(new LoopCommand(lex_bool_exp, commands, op_table, cost));
+    }
+
+    if (op == "if") {
+        return new CommandExpression(new IfCommand(lex_bool_exp, commands, op_table, cost));
+    }
+
+    return nullptr;
+}
+
+
+
+
+void run_scope(operators costs, operators op_table, SymbolTable& var_table, vector<string> to_run) {
+
+    int size = to_run.size();
+    for (int i = 0; i < size; i++) {
+
+        vector<string> v = run_shunting_yard(op_table, lexer(to_run[i]));
+        Expression* exp = parsing(costs, var_table, v);
+        exp->calculate(var_table);
+        delete exp;
+    }
 }

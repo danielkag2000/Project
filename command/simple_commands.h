@@ -78,12 +78,33 @@ public:
         }
         // the parameter has no value yet
         vars.set(this->assigned, this->varToAssign);
-        cout<<assigned<<" = "<<varToAssign<<endl;
         return varToAssign;  // succeed
     }
 
     virtual string returnValue(SymbolTable& vars) {
         return to_string(doCommand(vars));
+    }
+};
+
+/**
+ * create the print command
+ */
+class PrintCommand : public Command {
+private:
+    double varVal;
+
+public:
+    PrintCommand(double var) {
+        this->varVal = var;
+    }
+
+    virtual double doCommand(SymbolTable& vars) {
+        cout<<this->varVal<<endl;
+        return NAN;
+    }
+
+    virtual string returnValue(SymbolTable& vars) {
+        return "";
     }
 };
 

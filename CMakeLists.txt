@@ -18,6 +18,7 @@ file(GLOB SOURCES
         command/command.h
         definitions.h
         exp/command_expression.h
-        command/simple_commands.h)
+        command/simple_commands.h
+        command/complicate_commands.h)
 
 add_executable(Project ${SOURCES} vars/data_reader_server.cpp vars/data_reader_server.h algorithms/lexer.cpp algorithms/lexer.h definitions.h)
