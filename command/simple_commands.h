@@ -1,6 +1,7 @@
 #ifndef PROJECT_SIMPLE_COMMANDS_H
 #define PROJECT_SIMPLE_COMMANDS_H
 
+#include <cmath>
 #include "command.h"
 #include "../exceptions.h"
 

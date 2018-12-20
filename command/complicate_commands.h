@@ -3,6 +3,7 @@
 
 #include <list>
 #include <vector>
+#include <cmath>
 #include "../algorithms/parsing.h"
 #include "../algorithms/lexer.h"
 #include "../exp/exp.h"

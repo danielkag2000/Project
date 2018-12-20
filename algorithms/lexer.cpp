@@ -128,6 +128,10 @@ inline bool shouldUniteMinus(vector<string>& words, vector<int>& prev, int curr)
         && (words.size() <= 1 || !canHaveMinus(prev[prev.size() - 2]));
 }
 
+inline bool shouldUniteBind(vector<string>& words) {
+    return !words.empty() && words.back() == "=";
+}
+
 vector<string> lexer(const string &line) {
     vector<string> words;
     auto phrases_begin = sregex_iterator(line.begin(), line.end(), separator);
@@ -162,10 +166,14 @@ vector<string> lexer(const string &line) {
             words.back() += str;
         }
 
+        // turn every = bind to =bind
+        else if (str == "bind" && shouldUniteBind(words)) {
+            words.back() += str;
+        }
+
         // if we should push the current string as a word
         else if (!str.empty() && !isGroup(curr, WHITESPACE))
                 words.push_back(str);
-
 
         // prepare for next iteration
         nextBegin = endpos;
