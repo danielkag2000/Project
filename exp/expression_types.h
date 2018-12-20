@@ -20,7 +20,7 @@ public:
         this->number = stod(num);
     }
 
-    virtual double calculate(variables assignment) {
+    virtual double calculate(SymbolTable vars) {
         return this->number;
     }
 };
@@ -37,14 +37,12 @@ public:
         this->var = variable;
     }
 
-    virtual double calculate(variables assignment) {
-        variables::const_iterator got = assignment.find(this->var);
-
-        if (got == assignment.end()) {
+    virtual double calculate(SymbolTable vars) {
+        if (!vars.exists(this->var)) {
             throw VarUndefinedException(this->var);
         }
 
-        return (*got).second;
+        return vars.get(this->var);
     }
 };
 
@@ -65,8 +63,8 @@ public:
         this->_right = exp2;
     }
 
-    virtual double calculate(variables assignment) final {
-        return operation(_left->calculate(assignment), _right->calculate(assignment));
+    virtual double calculate(SymbolTable vars) final {
+        return operation(_left->calculate(vars), _right->calculate(vars));
     }
 
     virtual ~BinaryExpression() {

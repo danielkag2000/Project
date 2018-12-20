@@ -16,16 +16,16 @@ int main() {
     table.bind("hello", "fuck/you");
     table.set("x", 4.5);
     table.set("y", 100);
-    table.set("z", 6);
+    table.set("z", 5);
 
     cout << table.get("hello") << endl;
     cout << sizeof(string) << endl;
 
     string str;
-    //getline(cin, str);
+    getline(cin, str);
 
-//    vector<string> v = lexer(str);
-    vector<string> v = {"x", "+","y","*","(","z","==","5", ")","-","(","-3",")"};
+    vector<string> v = lexer(str);
+    //vector<string> v = {"x", "+","y","*","(","z","==","5", ")","-","(","-3",")"};
     for (string& s : v) {
         cout << s << ", ";
     }
@@ -43,7 +43,7 @@ int main() {
     operators op_table{ { "+", 2 }, { "-", 2 }, { "*", 2 }, { "/", 2 }, { "==", 2 } };
     Expression *e = parsing(op_table, table, postfix);
 
-    cout << e->calculate(table.asMap())<<endl;
+    cout << e->calculate(table)<<endl;
 
     return 0;
 }

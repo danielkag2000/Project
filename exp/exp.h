@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <string>
 #include "../exceptions.h"
+#include "../vars/stable.h"
 
 using namespace std;
 typedef unordered_map<string, double> variables;
@@ -24,10 +25,10 @@ public:
      * @throws Exception If the expression contains a variable
      *         which is not in the assignment, an exception
      *         is thrown.
-     */
+     *
     virtual double calculate() final {
         return calculate(variables());
-    }
+    }*/
 
     /**
      * Evaluate the expression using the variable values provided
@@ -39,7 +40,7 @@ public:
      *         which is not in the assignment, an exception
      *         is thrown.
      */
-    virtual double calculate(variables assignment) = 0;
+    virtual double calculate(SymbolTable vars) = 0;
 
     virtual ~Expression() {}
 };

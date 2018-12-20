@@ -7,7 +7,7 @@
 class command {
 
 public:
-    virtual double doCommand() = 0;
+    virtual double doCommand(SymbolTable vars) = 0;
 };
 
 #endif //PROJECT_COMMAND_H

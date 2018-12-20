@@ -13,8 +13,8 @@ public:
         this->_command = com;
     }
 
-    virtual double calculate(variables assignment) {
-        return this->_command->doCommand();
+    virtual double calculate(SymbolTable vars) {
+        return this->_command->doCommand(vars);
     }
 
     virtual ~CommandExpression() {

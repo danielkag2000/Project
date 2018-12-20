@@ -37,7 +37,7 @@ Expression* parsing(operators op_table, SymbolTable var_table, vector<string> to
             reverse(parameters.begin(), parameters.end()); // because the order is reversed
 
             Expression* exp = parser(parameters, var_table, token);
-            numbers.push(to_string(exp->calculate(var_table.asMap())));
+            numbers.push(to_string(exp->calculate(var_table)));
 
             parameters.clear();
             delete exp;
