@@ -4,6 +4,7 @@
 #include "../exp/exp.h"
 #include "../exp/expression_types.h"
 #include <regex>
+#include <algorithm>
 
 Expression* complicate_expression(const vector<string>& parameters, SymbolTable& var_table, const string& op);
 Expression* base_expression(SymbolTable& var_table, const string& op);
@@ -18,11 +19,13 @@ Expression* parsing(operators op_table, SymbolTable var_table, vector<string> to
 
     for(int i = 0; i < number_of_tokens - 1; i++) {
         token = tokens[i];
+
         // if it is not an operator
         if (op_table.find(token) == op_table.end()) {
             numbers.push(token);
 
         } else { // it is an operator
+
             int parm_num = op_table[token];
             for (int j = 0; j < parm_num; j++) {
                 if (numbers.empty()) {
@@ -31,25 +34,36 @@ Expression* parsing(operators op_table, SymbolTable var_table, vector<string> to
                 parameters.push_back(numbers.top());
                 numbers.pop();
             }
+            reverse(parameters.begin(), parameters.end()); // because the order is reversed
+
             Expression* exp = parser(parameters, var_table, token);
             numbers.push(to_string(exp->calculate(var_table.asMap())));
+
             parameters.clear();
             delete exp;
         }
     }
 
     // get the last command
-
-    int parm_num = op_table[token];
-    token = tokens[parm_num - 1];
+    token = tokens[number_of_tokens - 1];
 
     if (op_table.find(token) == op_table.end()) {
         throw SyntaxException("too many parameters");
     }
 
+    int param_num = op_table[token];
+    for (int i = 0; i < param_num; i++) {
+        if (numbers.empty()) {
+            throw SyntaxException("too few parameters");
+        }
+        parameters.push_back(numbers.top());
+        numbers.pop();
+    }
+    reverse(parameters.begin(), parameters.end()); // because the order is reversed
+
     // too many parameters
     if (!numbers.empty()) {
-        throw SyntaxException("too few parameters");
+        throw SyntaxException("too many parameters");
     }
 
     return parser(parameters, var_table, token);

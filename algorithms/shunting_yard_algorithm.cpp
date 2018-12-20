@@ -18,7 +18,7 @@ vector<string> run_shunting_yard(operators op_map, vector<string> tokens){
             _operators.push(token);
 
         } else if (token == ")") {
-            while (_operators.top() != "(" && !_operators.empty()) {
+            while (!_operators.empty() && _operators.top() != "(") {
                 _numbers.push(_operators.top());
                 _operators.pop();
             }
@@ -34,10 +34,11 @@ vector<string> run_shunting_yard(operators op_map, vector<string> tokens){
 
         } else {  // is an operator from the list
             // while there is an operator at the top of the stack with greater precedence
-            while (!_operators.empty() && (op_map[token] < op_map[_operators.top()])) {
+            while (!_operators.empty() && (op_map[token] <= op_map[_operators.top()]) && _operators.top() != "(") {
                 _numbers.push(_operators.top());
                 _operators.pop();
             }
+
             _operators.push(token);
         }
     }  // end of the for loop
