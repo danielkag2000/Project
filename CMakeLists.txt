@@ -14,11 +14,12 @@ file(GLOB SOURCES
         algorithms/shunting_yard_algorithm.cpp
         algorithms/parsing.h
         algorithms/parsing.cpp
-        exp/command_expression.h
+        command/command_expression.h
         command/command.h
         definitions.h
-        exp/command_expression.h
+        command/command_expression.h
         command/simple_commands.h
-        command/complicate_commands.h)
+        command/complicate_commands.h
+        exp/expression_map.h)
 
 add_executable(Project ${SOURCES} vars/data_reader_server.cpp vars/data_reader_server.h algorithms/lexer.cpp algorithms/lexer.h definitions.h)

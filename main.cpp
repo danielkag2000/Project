@@ -6,6 +6,7 @@
 #include "exp/expression_types.h"
 #include "exp/exp.h"
 #include "algorithms/parsing.h"
+#include "exp/expression_map.h"
 
 
 using namespace std;
@@ -53,6 +54,7 @@ int main() {
     cout<<"x is: " << table.get("x")<<endl;
     //table.set("x", - 50);
     //cout<<"hello is: " << table.get("hello")<<endl;*/
+
 
     operators ops{ { "+", 1 }, { "-", 1 }, { "*", 2 }, { "/", 2 }, { "==", 0 }, { "var", -2 }, { "bind", -2 }, { "=", -2 }, { "=bind", -2 }, { "print", -10 },
                    { "{", -20 }, { "}", -20 }, { "<", 0 }, { ">", 0 }, { "<=", 0 }, { ">=", 0 }};

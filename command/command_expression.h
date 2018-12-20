@@ -1,8 +1,8 @@
 #ifndef PROJECT_COMMAND_EXPRESSION_H
 #define PROJECT_COMMAND_EXPRESSION_H
 
-#include "../command/command.h"
-#include "exp.h"
+#include "command.h"
+#include "../exp/exp.h"
 
 class CommandExpression : public Expression {
 private:
