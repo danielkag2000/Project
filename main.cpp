@@ -75,13 +75,13 @@ void run_prog(istream& input, operators op_table, vector<string> multi_line_op, 
         if (s != "") {
             bool is_complicate = false;  // if the line is a complicate expression
             for(string& op : multi_line_op) {
-                string check = s.substr(0, op.size());
+                vector<string> check = lexer(s);
 
-                if (check == op) {
+                if (check[0] == op) {
                     is_complicate = true;
+                    check.erase(check.begin());
 
-                    string booleanExp = s.substr(op.size(), s.size());
-                    vector<string> lex_bool_exp = lexer(booleanExp);
+                    vector<string> lex_bool_exp = check;
                     lex_bool_exp.erase(find(lex_bool_exp.begin(), lex_bool_exp.end(), "{"));
 
                     // make post-fix
