@@ -4,6 +4,9 @@
 #include <cmath>
 #include "command.h"
 #include "../exceptions.h"
+#include <regex>
+
+bool isNumber(const string& s);
 
 /**
  * create the var command
@@ -92,15 +95,40 @@ public:
  */
 class PrintCommand : public Command {
 private:
-    double varVal;
+    string varVal;
+
+    bool isNumber(const string& s) {
+        regex r;
+        try {
+            r = regex("-?\\d+(\\.\\d+)?");
+        } catch (...) {
+            throw Exception("couldn't create the regex");
+        }
+        return regex_match(s, r);
+    }
 
 public:
-    PrintCommand(double var) {
+    PrintCommand(string var) {
         this->varVal = var;
     }
 
     virtual double doCommand(SymbolTable& vars) {
-        cout<<this->varVal<<endl;
+
+        if (this->varVal[0] == '\"') {
+            // given "str" print str
+            cout << this->varVal.substr(1, this->varVal.size() - 2) << endl;
+
+        } else if (isNumber(this->varVal)) {  // is a number
+            cout << stod(this->varVal) << endl;
+
+        } else { // is a variable
+            if (vars.exists(this->varVal)) {
+                cout << vars.get(this->varVal) << endl;
+
+            } else {  // this is exception
+                throw Exception("this variable is not exist");
+            }
+        }
         return NAN;
     }
 
@@ -108,5 +136,6 @@ public:
         return "";
     }
 };
+
 
 #endif //PROJECT_SIMPLE_COMMANDS_H

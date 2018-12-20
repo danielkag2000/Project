@@ -57,10 +57,10 @@ int main() {
 
 
     operators ops{ { "+", 1 }, { "-", 1 }, { "*", 2 }, { "/", 2 }, { "==", 0 }, { "var", -2 }, { "bind", -2 }, { "=", -2 }, { "=bind", -2 }, { "print", -10 },
-                   { "{", -20 }, { "}", -20 }, { "<", 0 }, { ">", 0 }, { "<=", 0 }, { ">=", 0 }};
+                   { "{", -20 }, { "}", -20 }, { "<", 0 }, { ">", 0 }, { "<=", 0 }, { ">=", 0 }, { "sleep", -10 }};
 
     operators costs{ { "+", 2 }, { "-", 2 }, { "*", 2 }, { "/", 2 }, { "==", 2 }, { "var", 1 }, { "bind", 2 }, { "=", 2 }, { "=bind", 2 }, { "print", 1 }
-                     , { "<", 2 }, { ">", 2 }, { "<=", 2 }, { ">=", 2 }};
+                     , { "<", 2 }, { ">", 2 }, { "<=", 2 }, { ">=", 2 }, { "sleep", 1 }};
 
     vector<string> multi_line_op = {"while", "if"};
     run_prog(cin, ops, multi_line_op, costs);
@@ -119,7 +119,17 @@ vector<string> read_scope(istream& input) {
     vector<string> res;
     while (getline(input, s)) {
         if (s != "") {
-            if (s == "}") {
+
+            vector<string> v = lexer(s);
+
+            if (find(v.begin(), v.end(), "}") != v.end()) {
+                v.erase(find(v.begin(), v.end(), "}"));
+                string new_str = "";
+                for (string str : v) {
+                    new_str += " " + str;
+                }
+
+                res.push_back(new_str);
                 break;
             }
             res.push_back(s);

@@ -4,6 +4,8 @@
 #include "../vars/stable.h"
 #include <vector>
 
+using namespace std;
+
 class Command {
 
 public:

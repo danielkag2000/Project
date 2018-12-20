@@ -9,12 +9,17 @@
 #include "shunting_yard_algorithm.h"
 #include "../command/complicate_commands.h"
 #include <regex>
+#include "../command/server_command.h"
 #include <algorithm>
 
 Expression* complicate_expression(const vector<string>& parameters, SymbolTable& var_table, const string& op);
 Expression* base_expression(SymbolTable& var_table, const string& op);
 
 Expression* parsing(operators op_table, SymbolTable& var_table, vector<string> tokens) {
+
+    for (string s : tokens) {
+        cout<<s<<" ";
+    }cout<<endl;
 
     //the parameters to the function
     vector<string> parameters;
@@ -111,8 +116,12 @@ Expression* parser(vector<string> parameters, SymbolTable& var_table, string fun
     }
 
     if (func_operator == "print") {
+        return new CommandExpression(new PrintCommand(parameters[0]));
+    }
+
+    if (func_operator == "sleep") {
         Expression* exp = base_expression(var_table, parameters[0]);
-        Expression* result = new CommandExpression(new PrintCommand(exp->calculate(var_table)));
+        Expression* result = new CommandExpression(new SleepCommand((int)exp->calculate(var_table)));
         delete exp;
         return result;
     }
