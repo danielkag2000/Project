@@ -3,13 +3,15 @@
 #include "../exceptions.h"
 #include "../exp/exp.h"
 #include "../exp/expression_types.h"
+#include "../command/command.h"
+#include "../command/simple_commands.h"
 #include <regex>
 #include <algorithm>
 
 Expression* complicate_expression(const vector<string>& parameters, SymbolTable& var_table, const string& op);
 Expression* base_expression(SymbolTable& var_table, const string& op);
 
-Expression* parsing(operators op_table, SymbolTable var_table, vector<string> tokens) {
+Expression* parsing(operators op_table, SymbolTable& var_table, vector<string> tokens) {
     //the parameters to the function
     vector<string> parameters;
     // the "numbers are the non operators
@@ -37,8 +39,10 @@ Expression* parsing(operators op_table, SymbolTable var_table, vector<string> to
             reverse(parameters.begin(), parameters.end()); // because the order is reversed
 
             Expression* exp = parser(parameters, var_table, token);
-            numbers.push(to_string(exp->calculate(var_table)));
-
+            double res = exp->calculate(var_table);
+            if (res != NAN) {
+                numbers.push(exp->returnValue(var_table));
+            }
             parameters.clear();
             delete exp;
         }
@@ -69,16 +73,6 @@ Expression* parsing(operators op_table, SymbolTable var_table, vector<string> to
     return parser(parameters, var_table, token);
 }
 
-Expression* parser(vector<string> parameters, SymbolTable var_table, string func_operator) {
-    if (func_operator == "+" || func_operator == "-" || func_operator == "*" || func_operator == "/"
-        || func_operator == "==" || func_operator == "!=" || func_operator == "<" || func_operator == ">"
-        || func_operator == "<=" || func_operator == ">=") {
-        return complicate_expression(parameters, var_table, func_operator);
-    }
-
-    return nullptr;
-}
-
 bool isNumber(const string& s) {
     regex r;
     try {
@@ -87,6 +81,31 @@ bool isNumber(const string& s) {
         throw Exception("couldn't create the regex");
     }
     return regex_match(s, r);
+}
+
+Expression* parser(vector<string> parameters, SymbolTable& var_table, string func_operator) {
+    if (func_operator == "+" || func_operator == "-" || func_operator == "*" || func_operator == "/"
+        || func_operator == "==" || func_operator == "!=" || func_operator == "<" || func_operator == ">"
+        || func_operator == "<=" || func_operator == ">=") {
+        return complicate_expression(parameters, var_table, func_operator);
+    }
+
+    if (func_operator == "=") {
+        Expression* exp = base_expression(var_table, parameters[1]);
+        Expression* result = new CommandExpression(new AssignCommand(parameters[0], exp->calculate(var_table)));
+        delete exp;
+        return result;
+    }
+
+    if (func_operator == "Var") {
+        return new CommandExpression(new VarCommand(parameters[0]));
+    }
+
+    if (func_operator == "=bind" || func_operator == "bind") {
+        return new CommandExpression(new BindCommand(parameters[0], parameters[1]));
+    }
+
+    return nullptr;
 }
 
 Expression* complicate_expression(const vector<string>& parameters, SymbolTable& var_table, const string& op) {

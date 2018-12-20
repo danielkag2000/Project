@@ -40,7 +40,9 @@ public:
      *         which is not in the assignment, an exception
      *         is thrown.
      */
-    virtual double calculate(SymbolTable vars) = 0;
+    virtual double calculate(SymbolTable& vars) = 0;
+
+    virtual string returnValue(SymbolTable& vars) = 0;
 
     virtual ~Expression() {}
 };

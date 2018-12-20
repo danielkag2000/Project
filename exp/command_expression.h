@@ -6,15 +6,19 @@
 
 class CommandExpression : public Expression {
 private:
-    command* _command;
+    Command* _command;
 
 public:
-    CommandExpression(command* com) {
+    CommandExpression(Command* com) {
         this->_command = com;
     }
 
-    virtual double calculate(SymbolTable vars) {
+    virtual double calculate(SymbolTable& vars) {
         return this->_command->doCommand(vars);
+    }
+
+    virtual string returnValue(SymbolTable& vars) {
+        return this->_command->returnValue(vars);
     }
 
     virtual ~CommandExpression() {

@@ -7,8 +7,8 @@
 #include "../definitions.h"
 #include <vector>
 
-Expression* parsing(operators op_table, SymbolTable var_table, vector<string> tokens);
+Expression* parsing(operators op_table, SymbolTable& var_table, vector<string> tokens);
 
-Expression* parser(vector<string> parameters, SymbolTable var_table, string func_operator);
+Expression* parser(vector<string> parameters, SymbolTable& var_table, string func_operator);
 
 #endif //PROJECT_PARSING_H
