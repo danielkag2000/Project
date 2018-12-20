@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include "exp.h"
 #include "expression_types.h"
-#include "../command/command_expression.h"
+#include "command_expression.h"
 
 class MapExpression {
 private:

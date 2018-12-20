@@ -2,7 +2,7 @@
 #define PROJECT_PARSING_H
 
 #include "../command/command.h"
-#include "../command/command_expression.h"
+#include "../exp/command_expression.h"
 #include "../vars/stable.h"
 #include "../definitions.h"
 #include <vector>

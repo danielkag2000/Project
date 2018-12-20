@@ -14,10 +14,10 @@ file(GLOB SOURCES
         algorithms/shunting_yard_algorithm.cpp
         algorithms/parsing.h
         algorithms/parsing.cpp
-        command/command_expression.h
+        exp/command_expression.h
         command/command.h
         definitions.h
-        command/command_expression.h
+        exp/command_expression.h
         command/simple_commands.h
         command/complicate_commands.h
         exp/expression_map.h)
