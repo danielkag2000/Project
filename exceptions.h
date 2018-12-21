@@ -48,4 +48,18 @@ struct InvalidParenthesisOrder : public SyntaxException {
     }
 };
 
+struct UnclosedSocketException : public Exception {
+    UnclosedSocketException(const std::string& msg)
+        : Exception("Socket not closed:: " + msg){
+
+    }
+};
+
+struct VariableAlreadyDeclaredException : public Exception {
+    VariableAlreadyDeclaredException(const std::string& varname)
+        : Exception("Variable already declared:: " + varname){
+
+    }
+};
+
 #endif //PROJECT_EXCEPTIONS_H

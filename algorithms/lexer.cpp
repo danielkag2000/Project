@@ -19,6 +19,7 @@
 #define LITERALS    3
 #define SYMBOLS     5
 #define WHITESPACE  6
+#define COMMA       7
 
 string regex_separator =
         "([a-zA-Z_][a-zA-Z_0-9]*)"      // variables & keywords
@@ -27,7 +28,8 @@ string regex_separator =
                                         // symbols
         "|(\\+|\\-|\\*|\\/|\\=\\=|\\=|\\<\\=|\\<|\\>\\=|\\>|\\(|\\)|\\{|\\})"
 
-        "|([ ,]+)"                      // whitespaces
+        "|([ ]+)"                       // whitespaces
+        "|([,]+)"                       // commas
         ;
 
 // (, x, +, 3, ), *, -, 4,
@@ -53,7 +55,7 @@ inline bool groupMatched(smatch& match, int groupId) {
     return match[groupId].matched;
 }
 
-list<int> possibilities{ KEYVARS, STRINGS, LITERALS, SYMBOLS, WHITESPACE };
+list<int> possibilities{ KEYVARS, STRINGS, LITERALS, SYMBOLS, WHITESPACE, COMMA };
 
 /**
  * Sets the flags for a given int according to a given match
@@ -125,7 +127,7 @@ inline bool canHaveMinus(int flags) {
  */
 inline bool shouldUniteMinus(vector<string>& words, vector<int>& prev, int curr) {
     return !words.empty() && words.back() == "-" && canHaveMinus(curr)
-        && (words.size() <= 1 || !canHaveMinus(prev[prev.size() - 2]));
+        && (words.size() <= 1 || isGroup(*(prev.end() - 2), COMMA));
 }
 
 inline bool shouldUniteBind(vector<string>& words) {
@@ -161,23 +163,24 @@ vector<string> lexer(const string &line) {
         if (!isLegal(prev, curr)) badStringException(line);
 
         // if had a minus before and current is a literal
-        if (shouldUniteMinus(words, previousMatches, curr)) {
+        if (shouldUniteMinus(words, previousMatches, curr))
             // unite the literal with the minus
             words.back() += str;
-        }
-
         // turn every = bind to =bind
-        else if (str == "bind" && shouldUniteBind(words)) {
+        else if (str == "bind" && shouldUniteBind(words))
             words.back() += str;
-        }
-
         // if we should push the current string as a word
-        else if (!str.empty() && !isGroup(curr, WHITESPACE))
-                words.push_back(str);
+        else if (!str.empty()
+            && !isGroup(curr, WHITESPACE)
+            && !isGroup(curr, COMMA))
+            words.push_back(str);
 
         // prepare for next iteration
         nextBegin = endpos;
-        previousMatches.push_back(curr);
+
+        // only push as previous match if not whitespace
+        if (!isGroup(curr, WHITESPACE))
+            previousMatches.push_back(curr);
     }
 
     return words;
