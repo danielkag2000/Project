@@ -22,6 +22,13 @@ file(GLOB SOURCES
         command/complicate_commands.h
         exp/expression_map.h
         command/server_command.h
-        command/server_command.cpp)
+        command/server_command.cpp
+        vars/data_server.cpp
+        vars/data_server.h
+        algorithms/lexer.cpp
+        algorithms/lexer.h
+        time.h
+        fdlist.h
+        definitions.h)
 
-add_executable(Project ${SOURCES} vars/data_reader_server.cpp vars/data_reader_server.h algorithms/lexer.cpp algorithms/lexer.h definitions.h)
+add_executable(Project ${SOURCES})

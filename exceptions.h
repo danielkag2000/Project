@@ -48,9 +48,16 @@ struct InvalidParenthesisOrder : public SyntaxException {
     }
 };
 
-struct UnclosedSocketException : public Exception {
+struct SocketException : public Exception {
+    SocketException(const std::string& msg)
+        : Exception("Socket Exception: " + msg) {
+
+    }
+};
+
+struct UnclosedSocketException : public SocketException {
     UnclosedSocketException(const std::string& msg)
-        : Exception("Socket not closed:: " + msg){
+            : SocketException("Socket not closed:: " + msg) {
 
     }
 };

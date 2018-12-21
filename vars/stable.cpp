@@ -1,68 +1,109 @@
 #include "stable.h"
+#include "../exceptions.h"
 #include <iostream>
 
+class NormalVar : public Variable {
+private:
+    double _value;
+public:
+    virtual double get() { return _value; }
 
-void Variable::saveData() {
-    if (bound()) {
-        cout << "Saved Data!" << endl;
+    virtual void set(double val) { _value = val; }
+
+    virtual void update(double val) { _value = val; }
+};
+
+class RemoteBoundVariable : public Variable {
+private:
+    DataTransfer& _transfer;
+    string _bind;
+public:
+    RemoteBoundVariable(DataTransfer& transfer, const string& bind) :
+            _transfer(transfer), _bind(bind) {
     }
-}
 
-bool Variable::bound() {
-    return !_handle.empty();
-}
+    virtual double get() {
+        return _transfer.getValue(_bind);
+    }
 
-void Variable::bind(const string &handle) {
-    _handle = handle;
-}
+    // shouldn't update, only set
+    virtual void update(double d) { }
 
-void Variable::unbind() {
-    _handle = "";
-}
+    virtual void set(double val) {
+        _transfer.setValue(_bind, val);
+    }
+};
 
-double Variable::get() {
-    return _val;
-}
+class VarBind : public Variable {
+private:
+    Variable& _bound;
 
-void Variable::update(double val) {
-    _val = val;
-}
+public:
+    VarBind(Variable* v) : _bound(*v) { }
 
-void Variable::set(double val) {
-    _val = val;
-    saveData();
-}
+    virtual double get() { return _bound.get(); }
+    virtual void update(double val) { _bound.update(val); }
+    virtual void set(double val) { _bound.set(val); }
+};
 
-bool SymbolTable::exists(const string &name) {
-    return _vars.find(name) != _vars.end();
-}
-
-void SymbolTable::bind(const string &var, const string &handle) {
-    _vars[var].bind(handle);
-}
-
-void SymbolTable::unbind(const string &var) {
-    _vars[var].unbind();
-}
-
-void SymbolTable::update(const string &var, double newVal) {
-    _vars[var].update(newVal);
+bool SymbolTable::exists(const string& name) {
+    return _vars.count(name) > 0;
 }
 
 void SymbolTable::set(const string &var, double val) {
-    _vars[var].set(val);
+    if (_vars[var] == nullptr) {
+        _vars[var] = new NormalVar();
+    }
+
+    _vars[var]->set(val);
 }
 
 double SymbolTable::get(const string &name) {
-    return _vars[name].get();
+    return _vars[name]->get();
+}
+
+void SymbolTable::bind(const string &name,
+        const string &handle, BindType type) {
+
+    // if allocated memory in the past, don't allow binding
+    if (_vars[name]) {
+        throw VariableAlreadyDeclaredException(name);
+    }
+
+    switch(type) {
+        case LOCAL_VARIABLE: {
+            // set a new variable bound to variable 'handle'
+            _vars[name] = new VarBind(_vars[handle]);
+            break;
+        }
+        case REMOTE_HANDLE: {
+            // bind as a remote variable
+            _vars[name] = new RemoteBoundVariable(_transfer, handle);
+            break;
+        }
+        default: {
+            break;
+        }
+    }
 }
 
 unordered_map<string, double> SymbolTable::asMap() {
-    unordered_map<string, double> m;
+    unordered_map<string, double> map;
 
-    for (pair<string, Variable> pair : _vars) {
-        m.insert({ pair.first, pair.second.get() });
+    // insert all pairs
+    for (auto& varPair : _vars) {
+        map.insert({ varPair.first, varPair.second->get() });
     }
 
-    return m;
+    return map;
+}
+
+SymbolTable::~SymbolTable() {
+    // free all memory
+    for (auto& varPair : _vars) {
+        delete varPair.second;
+    }
+
+    // clear the vars map
+    _vars.clear();
 }

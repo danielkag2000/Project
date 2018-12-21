@@ -1,5 +1,5 @@
 #include <iostream>
-
+#include <algorithm>
 #include "vars/stable.h"
 #include "algorithms/lexer.h"
 #include "algorithms/shunting_yard_algorithm.h"
@@ -71,7 +71,7 @@ int main() {
 
 void run_prog(istream& input, operators op_table, vector<string> multi_line_op, operators cost) {
     string s;
-    SymbolTable table;
+    SymbolTable table();
 
     while (getline(input, s)) {
         if (s != "") {

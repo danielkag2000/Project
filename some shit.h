@@ -5,6 +5,8 @@
 #ifndef PROJECT_SOME_SHIT_H
 #define PROJECT_SOME_SHIT_H
 
+#include <regex>
+
 void show_matches(const std::string& in, const std::string& re)
 {
     std::smatch m;

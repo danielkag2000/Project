@@ -4,6 +4,7 @@
 #include "command.h"
 #include <thread>
 #include <chrono>
+#include <cmath>
 
 class SleepCommand : public Command {
 private:
