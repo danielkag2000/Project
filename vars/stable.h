@@ -3,6 +3,7 @@
 
 #include <unordered_map>
 #include <string>
+#include <list>
 #include "data_server.h"
 
 using namespace std;
@@ -76,6 +77,17 @@ public:
      * Get all variables as a map.
      */
     unordered_map<string, double> asMap();
+
+    /**
+     * Remove a variable from the symbol table
+     * @param reference the variable name
+     */
+    void remove(const string reference);
+
+    /**
+     * Get a list of the variable names
+     */
+    list<string> get_variable_list();
 
     /**
      * Destructor.
