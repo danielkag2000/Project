@@ -3,67 +3,84 @@
 
 #include <unordered_map>
 #include <string>
+#include "data_server.h"
 
 using namespace std;
 
 class Variable {
-private:
-    double _val;
-    string _handle;
-
-    void saveData();
 public:
     /**
      * Get value of this variable
      * @return the value
      */
-    double get();
+    virtual double get() = 0;
 
     /**
-     * Update the inner value of this variable without sending to server.
+     * Update this variable without sending to the server
+     * (used when receiving data from server)
      * @param val the new value
      */
-    void update(double val);
+    virtual void update(double val) = 0;
 
     /**
-     * Set the inner value of this variable, and send to server.
+     * Set the inner value of this variable.
      * @param val the new value
      */
-    void set(double val);
+    virtual void set(double val) = 0;
+};
 
-    /**
-     * Bind this variable to a given handle.
-     * @param handle
-     */
-    void bind(const string& handle);
+enum BindType {
 
-    /**
-     * Unbind this variable.
-     */
-    void unbind();
-
-    /**
-     * Query whether this variable is bound.
-     * @return true if it is.
-     */
-    bool bound();
+    REMOTE_HANDLE,
+    LOCAL_VARIABLE
 };
 
 class SymbolTable {
 private:
-    unordered_map<string, Variable> _vars;
+    unordered_map<string, Variable*> _vars;
+    DataTransfer& _transfer;
 public:
+
+    SymbolTable(DataTransfer& transfer) : _transfer(transfer) { }
+
+    /**
+     * Query whether a variable exists.
+     * @param name the name of the variable
+     * @return true if exists, false otherwise.
+     */
     bool exists(const string& name);
 
-    void bind(const string& name, const string& handle);
-    void unbind(const string& name);
+    /**
+     * Bind a variable to another variable or path.
+     * @param name the name of the variable to bind
+     * @param handle a variable to bind to or a remote handle
+     * @param type the type of the bind
+     */
+    void bind(const string& name, const string& handle, BindType type);
 
-    void update(const string& var, double newVal);
+    /**
+     * Sets a value of a variable.
+     * @param var the variable name
+     * @param val the new value
+     */
     void set(const string& var, double val);
 
+    /**
+     * Get a current value of a variable.
+     * @param name the name of the variable
+     * @return the value of the variable
+     */
     double get(const string& name);
 
+    /**
+     * Get all variables as a map.
+     */
     unordered_map<string, double> asMap();
+
+    /**
+     * Destructor.
+     */
+    ~SymbolTable();
 };
 
 
