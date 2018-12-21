@@ -17,10 +17,6 @@ Expression* base_expression(SymbolTable& var_table, const string& op);
 
 Expression* parsing(operators op_table, SymbolTable& var_table, vector<string> tokens) {
 
-    for (string s : tokens) {
-        cout<<s<<" ";
-    }cout<<endl;
-
     //the parameters to the function
     vector<string> parameters;
     // the "numbers are the non operators
