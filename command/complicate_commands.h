@@ -27,11 +27,27 @@ public:
     }
 
     virtual double doCommand(SymbolTable& vars) {
-
+        // get the list of the variables
+        list<string> start_vars = vars.get_variable_list();
+        // get the boolean expression
         Expression* exp = parsing(this->costs, vars, this->booleanCondition);
+
+        // run the commands
         while (exp->calculate(vars)) {
+            // run the scope
             run_scope(this->costs, this->op_table, vars, this->commands);
             delete exp;
+
+            list<string> current_vars = vars.get_variable_list();
+            for (string s : current_vars) {
+                // if this var is not in the start list so it is a
+                // local variable that should be removed
+                if (find(start_vars.begin(), start_vars.end(), s) == start_vars.end()) {
+                    vars.remove(s);
+                }
+            }
+
+            // get the boolean expression
             exp = parsing(this->costs, vars, this->booleanCondition);
         }
 
@@ -63,10 +79,24 @@ public:
     }
 
     virtual double doCommand(SymbolTable& vars) {
+        // get the list of the variables
+        list<string> start_vars = vars.get_variable_list();
+        // get the boolean expression
         Expression* exp = parsing(this->costs, vars, this->booleanCondition);
-        if (exp->calculate(vars)) {
 
+        // run the commands
+        if (exp->calculate(vars)) {
+            // run the scope
             run_scope(this->costs, this->op_table, vars, this->commands);
+
+            list<string> current_vars = vars.get_variable_list();
+            for (string s : current_vars) {
+                // if this var is not in the start list so it is a
+                // local variable that should be removed
+                if (find(start_vars.begin(), start_vars.end(), s) == start_vars.end()) {
+                    vars.remove(s);
+                }
+            }
         }
 
         delete exp;
