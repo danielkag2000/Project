@@ -53,6 +53,7 @@ bool SymbolTable::exists(const string& name) {
 void SymbolTable::set(const string &var, double val) {
     if (_vars[var] == nullptr) {
         _vars[var] = new NormalVar();
+        _allocated.push_back(_vars[var]);
     }
 
     _vars[var]->set(val);
@@ -64,21 +65,17 @@ double SymbolTable::get(const string &name) {
 
 void SymbolTable::bind(const string &name,
         const string &handle, BindType type) {
-
-    // if allocated memory in the past, don't allow binding
-    if (_vars[name]) {
-        throw VariableAlreadyDeclaredException(name);
-    }
-
     switch(type) {
         case LOCAL_VARIABLE: {
             // set a new variable bound to variable 'handle'
             _vars[name] = new VarBind(_vars[handle]);
+            _allocated.push_back(_vars[name]);
             break;
         }
         case REMOTE_HANDLE: {
             // bind as a remote variable
             _vars[name] = new RemoteBoundVariable(_transfer, handle);
+            _allocated.push_back(_vars[name]);
             break;
         }
         default: {
@@ -98,12 +95,31 @@ unordered_map<string, double> SymbolTable::asMap() {
     return map;
 }
 
-SymbolTable::~SymbolTable() {
-    // free all memory
+void SymbolTable::remove(const string& name) {
+    _vars.erase(name);
+}
+
+DataTransfer& SymbolTable::getTransfer() {
+    return _transfer;
+}
+
+list<string> SymbolTable::get_variable_list() {
+    list<string> vars;
+
     for (auto& varPair : _vars) {
-        delete varPair.second;
+        vars.push_back(varPair.first);
     }
 
-    // clear the vars map
+    return vars;
+}
+
+SymbolTable::~SymbolTable() {
+    // free all memory
+    for (auto& var : _allocated) {
+        delete var;
+    }
+
+    // clear the vars map and allocated list
     _vars.clear();
+    _allocated.clear();
 }

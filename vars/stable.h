@@ -40,9 +40,11 @@ class SymbolTable {
 private:
     unordered_map<string, Variable*> _vars;
     DataTransfer& _transfer;
+
+    list<Variable*> _allocated;
 public:
 
-    SymbolTable(DataTransfer& transfer) : _transfer(transfer) { }
+    SymbolTable(DataTransfer& transfer) : _transfer(transfer), _allocated() { }
 
     /**
      * Query whether a variable exists.
@@ -82,12 +84,17 @@ public:
      * Remove a variable from the symbol table
      * @param reference the variable name
      */
-    void remove(const string reference);
+    void remove(const string& name);
 
     /**
      * Get a list of the variable names
      */
     list<string> get_variable_list();
+
+    /**
+     * Get the data transfer object.
+     */
+     DataTransfer& getTransfer();
 
     /**
      * Destructor.
