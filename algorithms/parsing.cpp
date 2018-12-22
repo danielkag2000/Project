@@ -122,6 +122,23 @@ Expression* parser(vector<string> parameters, SymbolTable& var_table, string fun
         return result;
     }
 
+    if (func_operator == "openDataServer") {
+        Expression* exp1 = base_expression(var_table, parameters[0]);
+        Expression* exp2 = base_expression(var_table, parameters[1]);
+        Expression* result = new CommandExpression(new OpenDataServerCommand((int)exp2->calculate(var_table),
+                                                                            (int)exp1->calculate(var_table)));
+        delete exp1;
+        delete exp2;
+        return result;
+    }
+
+    if (func_operator == "connect") {
+        Expression* exp = base_expression(var_table, parameters[1]);
+        Expression* result = new CommandExpression(new ConnectCommand(parameters[0], (int)exp->calculate(var_table)));
+        delete exp;
+        return result;
+    }
+
     return nullptr;
 }
 
