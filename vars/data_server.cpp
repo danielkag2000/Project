@@ -11,7 +11,10 @@
 #include <vector>
 #include <netdb.h>
 #include <set>
-//#include "../time.h"
+#include <regex>
+#include <sstream>
+#include <cmath>
+#include "../time.h"
 #include "../fdlist.h"
 
 mutex dataLock;
@@ -21,34 +24,39 @@ thread* serverThreadPtr;
 FdList serverfds; // a list of open file descriptors
 
 list<string> path_list {
-    "/instrumentation/airspeed-indicator/indicated-speed-kt",
-    "/instrumentation/altimeter/indicated-altitude-ft",
-    "/instrumentation/altimeter/pressure-alt-ft",
-    "/instrumentation/attitude-indicator/indicated-pitch-deg",
-    "/instrumentation/attitude-indicator/indicated-roll-deg",
-    "/instrumentation/attitude-indicator/internal-pitch-deg",
-    "/instrumentation/attitude-indicator/internal-roll-deg",
-    "/instrumentation/encoder/indicated-altitude-ft",
-    "/instrumentation/encoder/pressure-alt-ft",
-    "/instrumentation/gps/indicated-altitude-ft",
-    "/instrumentation/gps/indicated-ground-speed-kt",
-    "/instrumentation/gps/indicated-vertical-speed",
-    "/instrumentation/heading-indicator/indicated-heading-deg",
-    "/instrumentation/magnetic-compass/indicated-heading-deg",
-    "/instrumentation/slip-skid-ball/indicated-slip-skid",
-    "/instrumentation/turn-indicator/indicated-turn-rate",
-    "/instrumentation/vertical-speed-indicator/indicated-speed-fpm",
-    "/controls/flight/aileron",
-    "/controls/flight/elevator",
-    "/controls/flight/rudder",
-    "/controls/flight/flaps",
-    "/controls/engines/engine/throttle",
-    "/engines/engine/rpm",
+        "/instrumentation/airspeed-indicator/indicated-speed-kt",
+        "/instrumentation/altimeter/indicated-altitude-ft",
+        "/instrumentation/altimeter/pressure-alt-ft",
+        "/instrumentation/attitude-indicator/indicated-pitch-deg",
+        "/instrumentation/attitude-indicator/indicated-roll-deg",
+        "/instrumentation/attitude-indicator/internal-pitch-deg",
+        "/instrumentation/attitude-indicator/internal-roll-deg",
+        "/instrumentation/encoder/indicated-altitude-ft",
+        "/instrumentation/encoder/pressure-alt-ft",
+        "/instrumentation/gps/indicated-altitude-ft",
+        "/instrumentation/gps/indicated-ground-speed-kt",
+        "/instrumentation/gps/indicated-vertical-speed",
+        "/instrumentation/heading-indicator/indicated-heading-deg",
+        "/instrumentation/magnetic-compass/indicated-heading-deg",
+        "/instrumentation/slip-skid-ball/indicated-slip-skid",
+        "/instrumentation/turn-indicator/indicated-turn-rate",
+        "/instrumentation/vertical-speed-indicator/indicated-speed-fpm",
+        "/controls/flight/aileron",
+        "/controls/flight/elevator",
+        "/controls/flight/rudder",
+        "/controls/flight/flaps",
+        "/controls/engines/engine/throttle",
+        "/engines/engine/rpm"
 };
 
 set<string> path_set(path_list.begin(), path_list.end());
 
-#define DELIM   ','
+const set<char> delims{ ',', '\n' };
+regex numRegex("-?\\d+(\\.\\d+)?");
+
+bool isNumber(const string& s) {
+    return regex_match(s, numRegex);
+}
 
 /**
  * Read one double from client socket
@@ -59,8 +67,12 @@ double readVar(int client) {
     // get all double string from user
     string in;
     char input;
-    while (read(client, &input, sizeof(input)) > 0 && input != DELIM) {
+    while (read(client, &input, sizeof(input)) > 0 && delims.count(input) == 0) {
         in += input;
+    }
+
+    if (!isNumber(in)) {
+        return NAN;
     }
 
     return stod(in);
@@ -76,20 +88,21 @@ void readInsertAllData(int client) {
     for (const string& path : path_list) {
         double val = readVar(client);
         values[path] = val;
-
-        if (path == "/controls/flight/rudder")
-            cout << "path: " << path << ", value: " << val << endl;
     }
 
     dataLock.unlock();
 }
 
+struct serverInfo {
+    int port;
+    int hz;
+};
+
 /**
  * Create the server thread
- * @param port the port to run the server on
- * @param hz the frequency at which data is received
+ * @param info information to open the server with
  */
-void serverThread(int port, int hz) {
+void serverThread(serverInfo* info) {
     // get socket id
     int server = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -103,7 +116,7 @@ void serverThread(int port, int hz) {
     sockaddr_in address;
     address.sin_family = AF_INET;           // protocol ipv4
     address.sin_addr.s_addr = INADDR_ANY;   // open it on every possible
-    address.sin_port = htons(port);
+    address.sin_port = htons(info->port);
 
     sockaddr* addr = (sockaddr*) &address;
     socklen_t addrlen = sizeof(address);
@@ -130,8 +143,9 @@ void serverThread(int port, int hz) {
     serverfds.addFd(client);
 
     // calculate time between calls
-//    milliseconds sleepDuration(asMillis(1000 / hz));
+//    milliseconds sleepDuration(asMillis(1000 / info->hz));
 
+    delete info;
 
     // NOTE: we're blocked by read anyway, so we don't need to sleep as it occurs automatically
     while (serverfds.count()) { // while there are the sockets open
@@ -141,14 +155,15 @@ void serverThread(int port, int hz) {
         // insert all flight data
         readInsertAllData(client);
 
-        // sleep until next iteration
+//        // sleep until next iteration
 //        ms = currentMillis() - ms;
 //        this_thread::sleep_for(sleepDuration - ms);
     }
 }
 
 void DataReaderServer::open() {
-    serverThreadPtr = new thread(serverThread, _port, _hz);
+    serverInfo* info = new serverInfo{ _port, _hz };
+    serverThreadPtr = new thread(serverThread, info);
 }
 
 void DataReaderServer::close() {
@@ -197,25 +212,17 @@ inline bool pathExists(const string& path) {
     return path_set.count(path) > 0;
 }
 
-constexpr char set[] = "set";
 void DataSender::send(const string &path, double data) {
-    cout << "trying to set" << endl;
     if (pathExists(path)) {
-        string send = "set " + path + " " + to_string(data);
+        stringstream ss;
+        ss << "set " << path << " " << data << "\r\n";
 
-        cout << "send: " << send << endl;
-        if (write(_socket, send.c_str(), send.length())) {
+        string sendStr = ss.str();
+
+        if (::send(_socket, sendStr.c_str(), sendStr.length(), 0) < 0) {
             perror("Failed writing to socket.\n");
-
-            char str[] = "set /controls/flight/rudder -1";
-            write(_socket, str, sizeof(str) + 1);
         }
-
-
-
-        cout << "set variable: " << path << endl;
     }
-    cout << "finished set" << path << endl;
 }
 
 void DataSender::close() {
@@ -238,9 +245,7 @@ void DataTransfer::openDataServer(int port, int hz) {
     }
 
     _reader = new DataReaderServer(port, hz);
-    cout << "trying to open" << endl;
     _reader->open();
-    cout << "opened" << endl;
 }
 
 void DataTransfer::closeDataServer() {

@@ -31,4 +31,11 @@ file(GLOB SOURCES
         fdlist.h
         definitions.h)
 
+file(GLOB TESTS
+        main-test.cpp
+        vars/stable.h
+        vars/stable.cpp
+        vars/data_server.cpp
+        vars/data_server.h)
+
 add_executable(Project ${SOURCES})

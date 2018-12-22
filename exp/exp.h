@@ -44,8 +44,7 @@ public:
 
     virtual string returnValue(SymbolTable& vars) = 0;
 
-    virtual ~Expression() {}
+    virtual ~Expression() { };
 };
-
 
 #endif //PROJECT_EXP_H
