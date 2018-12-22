@@ -61,7 +61,6 @@ public:
      */
     virtual Command* getCommand(string& name) = 0;
 
-
     /**
      *
      * @param name

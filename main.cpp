@@ -17,14 +17,20 @@ void run_prog(istream& input, operators op_table, vector<string> multi_line_op, 
 
 int main() {
 
-    operators ops{ { "+", 1 }, { "-", 1 }, { "*", 2 }, { "/", 2 }, { "==", 0 }, { "var", -2 }, { "bind", -2 }, { "=", -2 }, { "=bind", -2 }, { "print", -10 },
-                   { "{", -20 }, { "}", -20 }, { "<", 0 }, { ">", 0 }, { "<=", 0 }, { ">=", 0 }, { "sleep", -10 }, { "openDataServer", -10 }};
+    operators ops{ { "+", 1 }, { "-", 1 }, { "*", 2 }, { "/", 2 }, { "==", 0 },
+                   { "var", -2 }, { "=", -2 }, { "=bind", -2 }, { "print", -10 },
+                   { "{", -20 }, { "}", -20 }, { "<", 0 }, { ">", 0 },
+                   { "<=", 0 }, { ">=", 0 }, { "sleep", -10 }, { "openDataServer", -10 },
+                   { ",", -1 }};
 
-    operators costs{ { "+", 2 }, { "-", 2 }, { "*", 2 }, { "/", 2 }, { "==", 2 }, { "var", 1 }, { "bind", 2 }, { "=", 2 }, { "=bind", 2 }, { "print", 1 }
-                     , { "<", 2 }, { ">", 2 }, { "<=", 2 }, { ">=", 2 }, { "sleep", 1 }, { "openDataServer", 2 }};
+    operators costs{ { "+", 2 }, { "-", 2 }, { "*", 2 }, { "/", 2 }, { "==", 2 }, { "var", 1 },
+                     { "=", 2 }, { "=bind", 2 }, { "print", 1 },
+                     { "<", 2 }, { ">", 2 }, { "<=", 2 }, { ">=", 2 },
+                     { "sleep", 1 }, { "openDataServer", 2 }};
 
     vector<string> multi_line_op = {"while", "if"};
     run_prog(cin, ops, multi_line_op, costs);
+
     return 0;
 }
 
@@ -62,7 +68,12 @@ void run_prog(istream& input, operators op_table, vector<string> multi_line_op, 
 
             if (!is_complicate) {  // it is a expression in 1 line
 
-                vector<string> v = run_shunting_yard(op_table, lexer(s));
+                vector<string> v = lexer(s);
+
+                if (v[0] == "openDataServer" || v[0] == "connect") {
+
+                }
+
                 Expression* exp = parsing(cost, table, v);
                 exp->calculate(table);
                 delete exp;
@@ -80,6 +91,9 @@ vector<string> read_scope(istream& input) {
     vector<string> res;
     while (getline(input, s)) {
         if (s != "") {
+            if (s == "}") {
+                break;
+            }
 
             vector<string> v = lexer(s);
 

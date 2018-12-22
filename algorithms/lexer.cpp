@@ -21,29 +21,36 @@
 #define WHITESPACE  6
 #define COMMA       7
 
-string regex_separator =
-        "([a-zA-Z_][a-zA-Z_0-9]*)"      // variables & keywords
-        "|(\".*\")"                     // strings
-        "|(\\d+(\\.\\d+)*)"             // literals
-                                        // symbols
-        "|(\\+|\\-|\\*|\\/|\\=\\=|\\=|\\<\\=|\\<|\\>\\=|\\>|\\(|\\)|\\{|\\})"
+/**
+ * Get a regex for identifying types
+ * @return a regex
+ */
+regex getIdentifierRegex() {
+    string regex_separator =
+            "([a-zA-Z_][a-zA-Z_0-9]*)"      // variables & keywords
+            "|(\".*\")"                     // strings
+            "|(\\d+(\\.\\d+)*)"             // literals
+            // symbols
+            "|(\\+|\\-|\\*|\\/|\\=\\=|\\=|\\<\\=|\\<|\\>\\=|\\>|\\(|\\)|\\{|\\})"
 
-        "|([ ]+)"                       // whitespaces
-        "|([,]+)"                       // commas
-        ;
+            "|([ ]+)"                       // whitespaces
+            "|([,]+)"                       // commas
+    ;
 
-// (, x, +, 3, ), *, -, 4,
+    return regex(regex_separator);
+}
 
-// (x +3)*-4
-// x 3 + * 4 -
+/**
+ * Checks if a flagged int is of a given group
+ * @param flags the flagged int
+ * @param groupID the group id
+ * @return true if it is, false otherwise
+ */
+inline bool isGroup(int flags, int groupID) {
+    return (bool) (flags & (1 << groupID));
+}
 
-// x 3 + 4 - *
-// (x +3)*(-4)
-
-// (xy8_2+3.14159)*689*(pi+boy_123)
-// xy8_2 3.14159 + 689 pi boy_123 + * *
-
-regex separator(regex_separator);
+regex separator(getIdentifierRegex());
 
 /**
  * Checks if a regex matched a given group
@@ -71,16 +78,6 @@ void setFlags(int& x, smatch& m) {
     }
 
     x = 0;
-}
-
-/**
- * Checks if a flagged int is of a given group
- * @param flags the flagged int
- * @param groupID the group id
- * @return true if it is, false otherwise
- */
-inline bool isGroup(int flags, int groupID) {
-    return (bool) (flags & (1 << groupID));
 }
 
 // all combinations that are not allowed after each other
@@ -126,12 +123,14 @@ inline bool canHaveMinus(int flags) {
  */
 inline bool shouldUniteMinus(vector<string>& words, int curr) {
     return !words.empty() && words.back() == "-" && canHaveMinus(curr)
-        && (words.size() <= 1 || (*(words.end() - 2)) == ",");
+           && (words.size() <= 1 || (*(words.end() - 2)) == ",");
 }
 
 inline bool shouldUniteBind(vector<string>& words) {
     return !words.empty() && words.back() == "=";
 }
+
+vector<string> removeCommas(vector<string>& lexed);
 
 vector<string> lexer(const string &line) {
     vector<string> words;
@@ -165,13 +164,12 @@ vector<string> lexer(const string &line) {
         if (shouldUniteMinus(words, curr))
             // unite the literal with the minus
             words.back() += str;
-        // turn every = bind to =bind
+            // turn every = bind to =bind
         else if (str == "bind" && shouldUniteBind(words))
             words.back() += str;
-        // if we should push the current string as a word
+            // if we should push the current string as a word
         else if (!str.empty()
-            && !isGroup(curr, WHITESPACE)
-            && !isGroup(curr, COMMA))
+                 && !isGroup(curr, WHITESPACE))
             words.push_back(str);
 
         // prepare for next iteration
@@ -179,5 +177,18 @@ vector<string> lexer(const string &line) {
         previousMatches.push_back(curr);
     }
 
-    return words;
+    return removeCommas(words);
+//    return words;
+}
+
+vector<string> removeCommas(vector<string>& lexed) {
+    vector<string> out;
+
+    for (string& s : lexed) {
+        if (s[0] != ',') {
+            out.push_back(s);
+        }
+    }
+
+    return out;
 }

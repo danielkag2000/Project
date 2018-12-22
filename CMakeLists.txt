@@ -40,4 +40,4 @@ file(GLOB TESTS
         vars/data_server.cpp
         vars/data_server.h)
 
-add_executable(Project ${SOURCES} utils.h utils.cpp better-command/command.h)
+add_executable(Project ${SOURCES} utils.h utils.cpp better-command/command.h better-command/command.cpp better-command/regularParser.h better-command/regularParser.cpp)

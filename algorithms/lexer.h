@@ -3,10 +3,12 @@
 
 #include <vector>
 #include <string>
+#include <regex>
 
 #include "../definitions.h"
 
 using namespace std;
+
 
 /***
  * Divide a line to an array of words.

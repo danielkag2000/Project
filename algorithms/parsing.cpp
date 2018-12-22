@@ -208,3 +208,7 @@ void run_scope(operators costs, operators op_table, SymbolTable& var_table, vect
         delete exp;
     }
 }
+
+Expression* parseFunc(vector<string> parameters, SymbolTable& var_table, string func_operator) {
+
+}
