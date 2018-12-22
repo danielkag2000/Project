@@ -15,7 +15,7 @@ public:
 };
 
 class ParserIterator {
-
+public:
     /**
      * Get current command.
      * @return a command
