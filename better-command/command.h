@@ -9,7 +9,7 @@ class ParserIterator;
 
 class Command {
 public:
-    virtual double doCommand(ParserIterator*) = 0;
+    virtual double doCommand(ParserIterator*, SymbolTable&) = 0;
 
     virtual ~Command() { }
 };
