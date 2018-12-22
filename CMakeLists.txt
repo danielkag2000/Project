@@ -29,7 +29,9 @@ file(GLOB SOURCES
         algorithms/lexer.h
         time.h
         fdlist.h
-        definitions.h)
+        definitions.h
+        better-command/commands.h
+        better-command/command.h)
 
 file(GLOB TESTS
         main-test.cpp
