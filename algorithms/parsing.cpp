@@ -8,7 +8,7 @@
 #include "lexer.h"
 #include "shunting_yard_algorithm.h"
 #include "../command/complicate_commands.h"
-#include <regex>
+#include "../utils.h"
 #include "../command/server_command.h"
 #include <algorithm>
 
@@ -77,16 +77,6 @@ Expression* parsing(operators op_table, SymbolTable& var_table, vector<string> t
     }
 
     return parser(parameters, var_table, token);
-}
-
-bool isNumber(const string& s) {
-    regex r;
-    try {
-        r = regex("-?\\d+(\\.\\d+)?");
-    } catch (...) {
-        throw Exception("couldn't create the regex");
-    }
-    return regex_match(s, r);
 }
 
 Expression* parser(vector<string> parameters, SymbolTable& var_table, string func_operator) {

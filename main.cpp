@@ -1,5 +1,6 @@
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 #include "vars/stable.h"
 #include "algorithms/lexer.h"
 #include "algorithms/shunting_yard_algorithm.h"
@@ -24,7 +25,6 @@ int main() {
 
     vector<string> multi_line_op = {"while", "if"};
     run_prog(cin, ops, multi_line_op, costs);
-
     return 0;
 }
 

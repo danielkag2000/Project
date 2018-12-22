@@ -6,7 +6,7 @@
 
 /*
  * variables    [a-zA-Z_][a-zA-Z_0-9]*
- *  strings     \".*\"
+ *  strings     ".*"
  *  literals    (\d+(\.\d+)*)
  *  keywords    [a-zA-Z_][a-zA-Z_0-9]*
  *  symbols     \+|\-|\*|\/|\=\=|\=|\<\=|\<|\>\=|\>|\(|\)|\{|\}
@@ -23,7 +23,7 @@
 
 string regex_separator =
         "([a-zA-Z_][a-zA-Z_0-9]*)"      // variables & keywords
-        "|(\\\".*\\\")"                 // strings
+        "|(\".*\")"                     // strings
         "|(\\d+(\\.\\d+)*)"             // literals
                                         // symbols
         "|(\\+|\\-|\\*|\\/|\\=\\=|\\=|\\<\\=|\\<|\\>\\=|\\>|\\(|\\)|\\{|\\})"
@@ -121,13 +121,12 @@ inline bool canHaveMinus(int flags) {
  * Checks whether the current word should be minus united with a previous minus(if exists)
  * It makes sure that the minus should be inserted and that it doesn't belong to other expression
  * @param words a list of the previous words(to check if it includes a minus)
- * @param prev a list of previous match types flags
  * @param curr the current match flag
  * @return true if should unite, false otherwise
  */
-inline bool shouldUniteMinus(vector<string>& words, vector<int>& prev, int curr) {
+inline bool shouldUniteMinus(vector<string>& words, int curr) {
     return !words.empty() && words.back() == "-" && canHaveMinus(curr)
-        && (words.size() <= 1 || isGroup(*(prev.end() - 2), COMMA));
+        && (words.size() <= 1 || (*(words.end() - 2)) == ",");
 }
 
 inline bool shouldUniteBind(vector<string>& words) {
@@ -163,7 +162,7 @@ vector<string> lexer(const string &line) {
         if (!isLegal(prev, curr)) badStringException(line);
 
         // if had a minus before and current is a literal
-        if (shouldUniteMinus(words, previousMatches, curr))
+        if (shouldUniteMinus(words, curr))
             // unite the literal with the minus
             words.back() += str;
         // turn every = bind to =bind
@@ -177,10 +176,7 @@ vector<string> lexer(const string &line) {
 
         // prepare for next iteration
         nextBegin = endpos;
-
-        // only push as previous match if not whitespace
-        if (!isGroup(curr, WHITESPACE))
-            previousMatches.push_back(curr);
+        previousMatches.push_back(curr);
     }
 
     return words;

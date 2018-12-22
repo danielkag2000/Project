@@ -47,7 +47,8 @@ public:
 };
 
 bool SymbolTable::exists(const string& name) {
-    return _vars.count(name) > 0;
+    int count = _vars.count(name);
+    return count > 0;
 }
 
 void SymbolTable::set(const string &var, double val) {
@@ -65,23 +66,26 @@ double SymbolTable::get(const string &name) {
 
 void SymbolTable::bind(const string &name,
         const string &handle, BindType type) {
+    Variable* inserted;
+
     switch(type) {
         case LOCAL_VARIABLE: {
             // set a new variable bound to variable 'handle'
-            _vars[name] = new VarBind(_vars[handle]);
-            _allocated.push_back(_vars[name]);
+            inserted = new VarBind(_vars[handle]);
             break;
         }
         case REMOTE_HANDLE: {
             // bind as a remote variable
-            _vars[name] = new RemoteBoundVariable(_transfer, handle);
-            _allocated.push_back(_vars[name]);
+            inserted = new RemoteBoundVariable(_transfer, handle);
             break;
         }
         default: {
-            break;
+            return;
         }
     }
+
+    _vars[name] = inserted;
+    _allocated.push_back(inserted);
 }
 
 unordered_map<string, double> SymbolTable::asMap() {

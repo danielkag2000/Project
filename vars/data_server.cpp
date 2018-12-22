@@ -11,11 +11,11 @@
 #include <vector>
 #include <netdb.h>
 #include <set>
-#include <regex>
 #include <sstream>
 #include <cmath>
 #include "../time.h"
 #include "../fdlist.h"
+#include "../utils.h"
 
 mutex dataLock;
 unordered_map<string, double> values;
@@ -52,11 +52,6 @@ list<string> path_list {
 set<string> path_set(path_list.begin(), path_list.end());
 
 const set<char> delims{ ',', '\n' };
-regex numRegex("-?\\d+(\\.\\d+)?");
-
-bool isNumber(const string& s) {
-    return regex_match(s, numRegex);
-}
 
 /**
  * Read one double from client socket

@@ -91,10 +91,6 @@ public:
      */
     list<string> get_variable_list();
 
-    DataTransfer& getTransfer() {
-        return _transfer;
-    }
-
     /**
      * Get the data transfer object.
      */

@@ -4,9 +4,7 @@
 #include <cmath>
 #include "command.h"
 #include "../exceptions.h"
-#include <regex>
-
-bool isNumber(const string& s);
+#include "../utils.h"
 
 /**
  * create the var command
@@ -49,7 +47,11 @@ public:
     }
 
     virtual double doCommand(SymbolTable& vars) {
-        if (this->varToBind[0] == '\"') {
+        if (!vars.exists(this->varToBind)) {
+            throw SyntaxException(this->varToBind + " does not exist.");
+        }
+
+        if (this->theBind[0] == '\"') {
             // given "str" print str
             string path = this->theBind.substr(1, this->theBind.size() - 2);
             vars.bind(this->varToBind, path, BindType::REMOTE_HANDLE);
@@ -104,16 +106,6 @@ public:
 class PrintCommand : public Command {
 private:
     string varVal;
-
-    bool isNumber(const string& s) {
-        regex r;
-        try {
-            r = regex("-?\\d+(\\.\\d+)?");
-        } catch (...) {
-            throw Exception("couldn't create the regex");
-        }
-        return regex_match(s, r);
-    }
 
 public:
     PrintCommand(string var) {
