@@ -208,15 +208,14 @@ inline bool pathExists(const string& path) {
 }
 
 void DataSender::send(const string &path, double data) {
-    if (pathExists(path)) {
-        stringstream ss;
-        ss << "set " << path << " " << data << "\r\n";
 
-        string sendStr = ss.str();
+    stringstream ss;
+    ss << "set " << path << " " << data << "\r\n";
 
-        if (::send(_socket, sendStr.c_str(), sendStr.length(), 0) < 0) {
-            perror("Failed writing to socket.\n");
-        }
+    string sendStr = ss.str();
+
+    if (::send(_socket, sendStr.c_str(), sendStr.length(), 0) < 0) {
+        perror("Failed writing to socket.\n");
     }
 }
 

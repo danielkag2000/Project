@@ -177,8 +177,8 @@ vector<string> lexer(const string &line) {
         previousMatches.push_back(curr);
     }
 
-    return removeCommas(words);
-//    return words;
+//    return removeCommas(words);
+    return words;
 }
 
 vector<string> removeCommas(vector<string>& lexed) {
