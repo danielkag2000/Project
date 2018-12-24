@@ -208,3 +208,58 @@ void run_scope(operators costs, operators op_table, SymbolTable& var_table, vect
         delete exp;
     }
 }
+
+
+/*void run_scope(operators costs, operators op_table, SymbolTable& var_table, vector<string> to_run, vector<string> multi_line_op) {
+
+    int size = to_run.size();
+    for (int i = 0; i < size; i++) {
+
+        bool is_complicate = false;  // if the line is a complicate expression
+        for(string& op : multi_line_op) {
+            vector<string> check = lexer(to_run[i]);
+            if (check[0] == op) {
+                is_complicate = true;
+                check.erase(check.begin());
+
+                vector<string> lex_bool_exp = check;
+                lex_bool_exp.erase(find(lex_bool_exp.begin(), lex_bool_exp.end(), "{"));
+
+                // make post-fix
+                lex_bool_exp = run_shunting_yard(op_table, lex_bool_exp);
+                // get the commands after the "{" until encounter "}"
+                vector<string> commands;
+
+                // read the commands
+                i += 1;  // the next line
+                for (;to_run[i] != "}"; i++) {
+                    vector<string> v = lexer(to_run[i]);
+
+                    if (find(v.begin(), v.end(), "}") != v.end()) {
+                        v.erase(find(v.begin(), v.end(), "}"));
+                        string new_str = "";
+                        for (string str : v) {
+                            new_str += " " + str;
+                        }
+
+                        commands.push_back(new_str);
+                        i += 1; // get the next line
+                        break;
+                    }
+                    commands.push_back(to_run[i]);
+                }  // finish read the scope
+
+                Expression* exp = parser_complicate(op, lex_bool_exp, commands, op_table, costs);
+                exp->calculate(var_table);
+                delete exp;
+            }
+        }  // end of the for
+
+        if (!is_complicate) {  // it is a expression in 1 line
+            vector<string> v = run_shunting_yard(op_table, lexer(to_run[i]));
+            Expression *exp = parsing(costs, var_table, v);
+            exp->calculate(var_table);
+            delete exp;
+        }
+    }
+}*/
