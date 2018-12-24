@@ -8,12 +8,12 @@
 #include "exp/exp.h"
 #include "algorithms/parsing.h"
 #include "exp/expression_map.h"
-
+#include "vars/data_server.h"
 
 using namespace std;
 
 vector<string> read_scope(istream& input);
-void run_prog(istream& input, operators op_table, vector<string> multi_line_op, operators cost);
+void run_prog(istream& input, operators& op_table, vector<string> multi_line_op, operators& cost, SymbolTable& table);
 
 int main() {
 
@@ -29,27 +29,38 @@ int main() {
                      { "sleep", 1 }, { "openDataServer", 2 }, { "connect", 2}};
 
     vector<string> multi_line_op = {"while", "if"};
-    run_prog(cin, ops, multi_line_op, costs);
+
+    DataTransfer dt;
+    SymbolTable table(dt);
+
+    try {
+        run_prog(cin, ops, multi_line_op, costs, table);
+    } catch (...) {
+        dt.closeAll();
+    }
     return 0;
 }
 
 
-void run_prog(istream& input, operators op_table, vector<string> multi_line_op, operators cost) {
+void run_prog(istream& input, operators& op_table, vector<string> multi_line_op, operators& cost, SymbolTable& table) {
     string s;
-    DataTransfer dt;
-    SymbolTable table(dt);
 
     while (getline(input, s)) {
-        if (s != "") {
+        if (s != "exit") {
             bool is_complicate = false;  // if the line is a complicate expression
             for(string& op : multi_line_op) {
                 vector<string> check = lexer(s);
-
+                if (check.empty()) {
+                    break;
+                }
                 if (check[0] == op) {
                     is_complicate = true;
                     check.erase(check.begin());
 
                     vector<string> lex_bool_exp = check;
+                    if (find(lex_bool_exp.begin(), lex_bool_exp.end(), "{") == lex_bool_exp.end()) {
+                        throw SyntaxException("expecting '}'");
+                    }
                     lex_bool_exp.erase(find(lex_bool_exp.begin(), lex_bool_exp.end(), "{"));
 
                     // make post-fix
@@ -77,8 +88,10 @@ void run_prog(istream& input, operators op_table, vector<string> multi_line_op, 
                 }
 
                 Expression* exp = parsing(cost, table, words);
-                exp->calculate(table);
-                delete exp;
+                if (exp != nullptr) {
+                    exp->calculate(table);
+                    delete exp;
+                }
             }
 
         } else {
@@ -92,8 +105,8 @@ vector<string> read_scope(istream& input) {
     string s;
     vector<string> res;
     while (getline(input, s)) {
-        if (s != "") {
-            if (s == "}") {
+        if (!s.empty()) {
+            if (lexer(s)[0] == "}") {
                 break;
             }
 
@@ -102,7 +115,7 @@ vector<string> read_scope(istream& input) {
             if (find(v.begin(), v.end(), "}") != v.end()) {
                 v.erase(find(v.begin(), v.end(), "}"));
                 string new_str = "";
-                for (string str : v) {
+                for (string& str : v) {
                     new_str += " " + str;
                 }
 
