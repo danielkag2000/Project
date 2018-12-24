@@ -30,10 +30,10 @@ file(GLOB SOURCES
         time.h
         fdlist.h
         definitions.h
-        better-command/commands.h
-        better-command/command.h
-        better-command/simple_commands.cpp
-        better-command/server_commands.cpp
+#        better-command/commands.h
+#        better-command/command.h
+#        better-command/simple_commands.cpp
+#        better-command/server_commands.cpp
         creators/command_creator.h
         creators/command_creators.cpp
         creators/create_creators_map.h

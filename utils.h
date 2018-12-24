@@ -9,7 +9,8 @@
 #include <regex>
 
 bool isNumber(const std::string& s);
-
 bool isVariable(const std::string& s);
+bool isVarNum(const std::string& s);
+bool isExpr(const std::string& s);
 
 #endif

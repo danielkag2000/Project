@@ -96,8 +96,9 @@ struct serverInfo {
 /**
  * Create the server thread
  * @param info information to open the server with
+ * @param caller the caller thread
  */
-void serverThread(serverInfo* info) {
+void serverThread(serverInfo* info, pthread_t caller) {
     // get socket id
     int server = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -138,27 +139,36 @@ void serverThread(serverInfo* info) {
     serverfds.addFd(client);
 
     // calculate time between calls
-//    milliseconds sleepDuration(asMillis(1000 / info->hz));
+    milliseconds sleepDuration(asMillis(1000 / info->hz));
 
     delete info;
+
+    bool paused = true;
 
     // NOTE: we're blocked by read anyway, so we don't need to sleep as it occurs automatically
     while (serverfds.count()) { // while there are the sockets open
         // get current ms
-//        milliseconds ms(currentMillis());
+        milliseconds ms(currentMillis());
 
         // insert all flight data
         readInsertAllData(client);
 
+        if (paused) {
+            // if the main thread is waiting, let it continue
+            pthread_kill(caller, SIGCONT);
+            paused = false;
+        }
 //        // sleep until next iteration
-//        ms = currentMillis() - ms;
-//        this_thread::sleep_for(sleepDuration - ms);
+        ms = currentMillis() - ms;
+        this_thread::sleep_for(sleepDuration - ms);
     }
 }
 
 void DataReaderServer::open() {
     serverInfo* info = new serverInfo{ _port, _hz };
-    serverThreadPtr = new thread(serverThread, info);
+    serverThreadPtr = new thread(serverThread, info, pthread_self());
+
+    pause(); // wait until first input
 }
 
 void DataReaderServer::close() {
@@ -224,19 +234,11 @@ void DataSender::close() {
 }
 
 bool DataSender::isOpen() {
-    return _clientFds.count();
+    return _clientFds.count() > 0;
 }
 
 void DataTransfer::openDataServer(int port, int hz) {
-    if (_reader != nullptr) {
-
-        if (_reader->isOpen())
-            throw UnclosedSocketException
-                ("Tried to open another data server while there is one already working!");
-        else {
-            delete _reader;
-        }
-    }
+    delete _reader; // delete if needed(read from the internet - it's ok to delete a null pointer)
 
     _reader = new DataReaderServer(port, hz);
     _reader->open();
@@ -248,11 +250,7 @@ void DataTransfer::closeDataServer() {
 }
 
 void DataTransfer::openSender(int port, const string &remoteIp) {
-//    if (_sender != nullptr) {
-//        throw UnclosedSocketException
-//                ("Tried to open another sender while there is one already working!");
-//    }
-// TODO ADD IT
+    delete _sender; // delete if needed
 
     _sender = new DataSender(port, remoteIp);
     _sender->open();

@@ -3,6 +3,7 @@
 #include <list>
 #include "lexer.h"
 #include "../exceptions.h"
+#include "../utils.h"
 
 /*
  * variables    [a-zA-Z_][a-zA-Z_0-9]*
@@ -132,6 +133,8 @@ inline bool shouldUniteBind(vector<string>& words) {
 
 vector<string> removeCommas(vector<string>& lexed);
 
+vector<string> uniteThings(vector<string>& v);
+
 vector<string> lexer(const string &line) {
     vector<string> words;
     auto phrases_begin = sregex_iterator(line.begin(), line.end(), separator);
@@ -177,11 +180,34 @@ vector<string> lexer(const string &line) {
         previousMatches.push_back(curr);
     }
 
-//    return removeCommas(words);
-    return words;
+    return uniteThings(words);
 }
 
 
+
+vector<string> uniteThings(vector<string>& v) {
+    if (v.empty())
+        return v;
+
+    vector<string> united{v[0]};
+
+    for (int i = 1; i < v.size(); i++) {
+        if ( (v[i] == "bind" && v[i - 1] == "=")
+            || (v[i] == "-" && !isExpr(v[i - 1]))) {
+            /*
+             * unite every = bind to =bind
+             * unite every - expr to -expr
+             */
+            // unite every = bind to =bind
+            united.front() += v[i];
+        }
+        else {
+            united.push_back(v[i]);
+        }
+    }
+
+    return united;
+}
 
 vector<string> removeCommas(vector<string>& lexed) {
     vector<string> out;
