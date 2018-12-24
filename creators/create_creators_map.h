@@ -7,18 +7,20 @@
 
 using namespace std;
 
-unordered_map<string, CommandCreator> create_creators_map(vector<string> multi_line_commands, operators op_table, operators cost, SymbolTable& var_table) {
-    unordered_map<string, CommandCreator> table {{"+", PlusCreator(var_table)}, {"-", MinusCreator(var_table)},
-                                                 {"*", MulCreator(var_table)}, {"/", MinusCreator(var_table)},
-                                                 {"==", EquCreator(var_table)}, {"!=", DivCreator(var_table)},
-                                                 {"var", VarCreator(var_table)}, {"=bind", BindCreator(var_table)},
-                                                 {"=", AssignCreator(var_table)}, {"print", PrintCreator(var_table)},
-                                                 {">", GreatCreator(var_table)}, {"<", LessCreator(var_table)},
-                                                 {">=", GreatEquCreator(var_table)}, {"<=", LessEquCreator(var_table)},
-                                                 {"sleep", SleepCreator(var_table)}, {"openDataServer", ODSCreator(var_table)},
-                                                 {"connect", ConnectCreator(var_table)},
-                                                 {"while", WhileCreator(multi_line_commands, op_table, cost, var_table)},
-                                                 {"if", IfCreator(multi_line_commands, op_table, cost, var_table)}};
+unordered_map<string, CommandCreator*> create_creators_map(vector<string> multi_line_commands, operators op_table, operators cost, SymbolTable& var_table) {
+    unordered_map<string, CommandCreator*> table {
+        {"+", new PlusCreator(var_table)}, {"-", new MinusCreator(var_table)},
+        {"*", new MulCreator(var_table)}, {"/", new MinusCreator(var_table)},
+        {"==", new EquCreator(var_table)}, {"!=", new DivCreator(var_table)},
+        {"var", new VarCreator(var_table)}, {"=bind", new BindCreator(var_table)},
+        {">", new GreatCreator(var_table)}, {"<", new LessCreator(var_table)},
+        {">=", new GreatEquCreator(var_table)}, {"<=", new LessEquCreator(var_table)},
+        {"=", new AssignCreator(var_table)}, {"print", new PrintCreator(var_table)},
+        {"sleep", new SleepCreator(var_table)}, {"openDataServer", new ODSCreator(var_table)},
+        {"connect", new ConnectCreator(var_table)},
+        {"while", new WhileCreator(multi_line_commands, op_table, cost, var_table)},
+        {"if", new IfCreator(multi_line_commands, op_table, cost, var_table)}
+    };
 
     return table;
 }
