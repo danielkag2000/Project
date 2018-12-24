@@ -10,4 +10,6 @@
 
 bool isNumber(const std::string& s);
 
+bool isVariable(const std::string& s);
+
 #endif

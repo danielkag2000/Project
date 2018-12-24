@@ -115,8 +115,8 @@ Expression* parser(vector<string> parameters, SymbolTable& var_table, string fun
     if (func_operator == "openDataServer") {
         Expression* exp1 = base_expression(var_table, parameters[0]);
         Expression* exp2 = base_expression(var_table, parameters[1]);
-        Expression* result = new CommandExpression(new OpenDataServerCommand((int)exp1->calculate(var_table),
-                                                                            (int)exp2->calculate(var_table)));
+        Expression* result = new CommandExpression(new OpenDataServerCommand((int)exp2->calculate(var_table),
+                                                                            (int)exp1->calculate(var_table)));
         delete exp1;
         delete exp2;
         return result;
@@ -207,8 +207,4 @@ void run_scope(operators costs, operators op_table, SymbolTable& var_table, vect
         exp->calculate(var_table);
         delete exp;
     }
-}
-
-Expression* parseFunc(vector<string> parameters, SymbolTable& var_table, string func_operator) {
-
 }
