@@ -17,14 +17,14 @@ void run_prog(istream& input, operators op_table, vector<string> multi_line_op, 
 
 int main() {
 
-    operators ops{ { "+", 1 }, { "-", 1 }, { "*", 2 }, { "/", 2 }, { "==", 0 },
+    operators ops{ { "+", 1 }, { "-", 1 }, { "*", 2 }, { "/", 2 }, { "==", 0 }, { "!=", 0 }
                    { "var", -2 }, { "=", -2 }, { "=bind", -2 }, { "print", -10 },
                    { "{", -20 }, { "}", -20 }, { "<", 0 }, { ">", 0 },
                    { "<=", 0 }, { ">=", 0 }, { "sleep", -10 }, { "openDataServer", -10 },
                    { "connect", -10 }, { ",", -1 }};
 
     operators costs{ { "+", 2 }, { "-", 2 }, { "*", 2 }, { "/", 2 }, { "==", 2 }, { "var", 1 },
-                     { "=", 2 }, { "=bind", 2 }, { "print", 1 },
+                     { "=", 2 }, { "=bind", 2 }, { "print", 1 }, { "!=", 2 }
                      { "<", 2 }, { ">", 2 }, { "<=", 2 }, { ">=", 2 },
                      { "sleep", 1 }, { "openDataServer", 2 }, { "connect", 2}};
 
