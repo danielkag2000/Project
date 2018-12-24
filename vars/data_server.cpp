@@ -45,7 +45,7 @@ list<string> path_list {
         "/controls/flight/elevator",
         "/controls/flight/rudder",
         "/controls/flight/flaps",
-        "/controls/engines/engine/throttle",
+        "/controls/engines/curret-engine/throttle",
         "/engines/engine/rpm"
 };
 
@@ -248,10 +248,11 @@ void DataTransfer::closeDataServer() {
 }
 
 void DataTransfer::openSender(int port, const string &remoteIp) {
-    if (_sender != nullptr) {
-        throw UnclosedSocketException
-                ("Tried to open another sender while there is one already working!");
-    }
+//    if (_sender != nullptr) {
+//        throw UnclosedSocketException
+//                ("Tried to open another sender while there is one already working!");
+//    }
+// TODO ADD IT
 
     _sender = new DataSender(port, remoteIp);
     _sender->open();

@@ -1,4 +1,5 @@
 #include "commands.h"
+#include "../utils.h"
 #include <cmath>
 
 /* the simple commands */

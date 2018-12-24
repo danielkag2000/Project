@@ -34,9 +34,10 @@ file(GLOB SOURCES
         better-command/command.h
         better-command/simple_commands.cpp
         better-command/server_commands.cpp
-        creators/command_creator.h
-        creators/command_creators.cpp
-        creators/create_creators_map.h)
+#        creators/command_creator.h
+#        creators/command_creators.cpp
+#        creators/create_creators_map.h
+        )
 
 file(GLOB TESTS
         main-test.cpp

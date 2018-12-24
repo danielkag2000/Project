@@ -33,7 +33,7 @@ regex getIdentifierRegex() {
             // symbols
             "|(\\+|\\-|\\*|\\/|\\=\\=|\\=|\\<\\=|\\<|\\>\\=|\\>|\\(|\\)|\\{|\\})"
 
-            "|([ ]+)"                       // whitespaces
+            "|(\\s+)"                       // whitespaces
             "|([,]+)"                       // commas
     ;
 
@@ -123,7 +123,7 @@ inline bool canHaveMinus(int flags) {
  */
 inline bool shouldUniteMinus(vector<string>& words, int curr) {
     return !words.empty() && words.back() == "-" && canHaveMinus(curr)
-           && (words.size() <= 1 || (*(words.end() - 2)) == ",");
+           && (words.size() <= 1 || (words.end()[-2]) == "," || (words.end()[-2]) == "=");
 }
 
 inline bool shouldUniteBind(vector<string>& words) {
@@ -180,6 +180,8 @@ vector<string> lexer(const string &line) {
 //    return removeCommas(words);
     return words;
 }
+
+
 
 vector<string> removeCommas(vector<string>& lexed) {
     vector<string> out;

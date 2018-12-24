@@ -174,9 +174,13 @@ Expression* base_expression(SymbolTable& var_table, const string& op) {
 
         } else if (isNumber(op)) {
             return new Num(op);
+        } else if (op[0] == '-') {  // negative variable
+            if (var_table.exists(op.substr(1, op.size() - 1))) {
+                return new Minus(new Num(0), new Var(op.substr(1, op.size() - 1)));
+            }
         }
 
-        throw SyntaxException("bad expression");
+    throw SyntaxException("bad expression");
 }
 
 

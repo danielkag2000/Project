@@ -123,15 +123,3 @@ Expression* IfCreator::create(vector<string> parameters) {
 
     return new CommandExpression(new IfCommand(bool_exp, commands, op_table, cost));
 }
-
-
-Expression* base_expression(SymbolTable& var_table, const string& op) {
-    if (var_table.exists(op)) {
-        return new Var(op);
-
-    } else if (isNumber(op)) {
-        return new Num(op);
-    }
-
-    throw SyntaxException("bad expression");
-}
