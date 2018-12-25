@@ -102,7 +102,7 @@ Expression* parser(vector<string> parameters, SymbolTable& var_table, string fun
         return new CommandExpression(new VarCommand(parameters[0]));
     }
 
-    if (func_operator == "=bind" || func_operator == "bind") {
+    if (func_operator == "=bind") {
         return new CommandExpression(new BindCommand(parameters[0], parameters[1]));
     }
 
