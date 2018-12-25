@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <algorithm>
 #include <cmath>
 #include "vars/stable.h"
@@ -15,7 +16,7 @@ using namespace std;
 vector<string> read_scope(istream& input);
 void run_prog(istream& input, operators& op_table, vector<string> multi_line_op, operators& cost, SymbolTable& table);
 
-int main() {
+int main(int argc, char* argv[]) {
 
     operators ops{ { "+", 1 }, { "-", 1 }, { "*", 2 }, { "/", 2 }, { "==", 0 }, { "!=", 0 },
                    { "var", -2 }, { "=", -2 }, { "=bind", -2 }, { "print", -10 },
@@ -33,10 +34,19 @@ int main() {
     DataTransfer dt;
     SymbolTable table(dt);
 
+
     try {
-        run_prog(cin, ops, multi_line_op, costs, table);
+
+        if (argc == 20) {
+            ifstream f(argv[1]);
+            run_prog(f, ops, multi_line_op, costs, table);
+
+        } else {
+            run_prog(cin, ops, multi_line_op, costs, table);
+        }
     } catch (...) {
         dt.closeAll();
+        cout << "an exception has been occur, the program closed" << endl;
     }
     return 0;
 }
