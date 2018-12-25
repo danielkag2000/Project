@@ -17,12 +17,6 @@
 #include "../fdlist.h"
 #include "../utils.h"
 
-mutex dataLock;
-unordered_map<string, double> values;
-thread* serverThreadPtr;
-
-FdList serverfds; // a list of open file descriptors
-
 list<string> path_list {
         "/instrumentation/airspeed-indicator/indicated-speed-kt",
         "/instrumentation/altimeter/indicated-altitude-ft",
@@ -36,7 +30,7 @@ list<string> path_list {
         "/instrumentation/gps/indicated-altitude-ft",
         "/instrumentation/gps/indicated-ground-speed-kt",
         "/instrumentation/gps/indicated-vertical-speed",
-        "/instrumentation/heading-indicator/indicated-heading-deg",
+        "/instrumentation/heading-indicator/offset-deg",
         "/instrumentation/magnetic-compass/indicated-heading-deg",
         "/instrumentation/slip-skid-ball/indicated-slip-skid",
         "/instrumentation/turn-indicator/indicated-turn-rate",
@@ -50,7 +44,6 @@ list<string> path_list {
 };
 
 set<string> path_set(path_list.begin(), path_list.end());
-
 const set<char> delims{ ',', '\n' };
 
 /**
@@ -73,117 +66,104 @@ double readVar(int client) {
     return stod(in);
 }
 
-/**
- * Reads and inserts all data from socket client
- * @param client the socket client id
- */
-void readInsertAllData(int client) {
-    dataLock.lock();
-
-    for (const string& path : path_list) {
-        double val = readVar(client);
-        values[path] = val;
-    }
-
-    dataLock.unlock();
-}
-
-struct serverInfo {
-    int port;
-    int hz;
-};
-
-/**
- * Create the server thread
- * @param info information to open the server with
- * @param caller the caller thread
- */
-void serverThread(serverInfo* info, pthread_t caller) {
+int DataReaderServer::openServer() {
     // get socket id
-    int server = socket(AF_INET, SOCK_STREAM, 0);
+    const int server = socket(AF_INET, SOCK_STREAM, 0);
 
     if (server < 0) {
         throw SocketException("Failed opening server.");
     }
 
-    serverfds.addFd(server);
+    // add the server as a file descriptor
+    _fds.addFd(server);
 
     // setup address
-    sockaddr_in address;
+    sockaddr_in address{};
     address.sin_family = AF_INET;           // protocol ipv4
     address.sin_addr.s_addr = INADDR_ANY;   // open it on every possible
-    address.sin_port = htons(info->port);
-
-    sockaddr* addr = (sockaddr*) &address;
-    socklen_t addrlen = sizeof(address);
+    address.sin_port = htons(_port);
 
     // bind server
-    int bindRes = bind(server, addr, addrlen);
+    const int bindRes = bind(server, (sockaddr*) &address, sizeof(address));
 
     // listen to data connection (expecting only 1)
-    int listenRes = listen(server, 5);
+    const int listenRes = listen(server, 5);
 
     if (bindRes < 0 || listenRes < 0) {
-        serverfds.closeFds();
+        _fds.closeFds();
         throw SocketException("Failed binding or listening.");
     }
 
-    // accept data client
-    int client = accept(server, addr, &addrlen);
+    return server;
+}
 
+int DataReaderServer::connectClient(int server) {
+    int client = accept(server, nullptr, nullptr);
+
+    cout << "accepted" << endl;
     if (client < 0) {
-        serverfds.closeFds();
+        _fds.closeFds();
         throw SocketException("Failed connecting to client.");
     }
 
-    serverfds.addFd(client);
+    _fds.addFd(client);
 
-    // calculate time between calls
-    milliseconds sleepDuration(asMillis(1000 / info->hz));
+    return client;
+}
 
-    delete info;
+void DataReaderServer:: readOneSequence(int client) {
+    _dataLock.lock();
 
-    bool paused = true;
+    for (const string& path : path_list) {
+        double val = readVar(client);
+        _paths[path] = val;
+    }
 
-    // NOTE: we're blocked by read anyway, so we don't need to sleep as it occurs automatically
-    while (serverfds.count()) { // while there are the sockets open
+    _dataLock.unlock();
+}
+
+void DataReaderServer::readData(int client, int hz) {
+    milliseconds sleepDuration(asMillis(1000 / hz));
+
+    // while the sockets are open
+    while (_fds.count()) {
         // get current ms
         milliseconds ms(currentMillis());
 
         // insert all flight data
-        readInsertAllData(client);
+        readOneSequence(client);
 
-        if (paused) {
-            // if the main thread is waiting, let it continue
-            pthread_kill(caller, SIGCONT);
-            paused = false;
-        }
-//        // sleep until next iteration
+        // sleep until next iteration
         ms = currentMillis() - ms;
         this_thread::sleep_for(sleepDuration - ms);
     }
 }
 
 void DataReaderServer::open() {
-    serverInfo* info = new serverInfo{ _port, _hz };
-    serverThreadPtr = new thread(serverThread, info, pthread_self());
+    int server = openServer();
+    int client = connectClient(server);
 
-    pause(); // wait until first input
+    // wait until reading just the first sequence
+    readOneSequence(client);
+
+    // run the server thread on the current inner state
+    _serverThread = new thread(&DataReaderServer::readData,
+            this, client, _hz);
 }
 
 void DataReaderServer::close() {
-    serverfds.closeFds();
-    serverThreadPtr->join();
+    _fds.closeFds();
+    _serverThread->join();
 }
 
 bool DataReaderServer::isOpen() {
-    return serverfds.count();
+    return _fds.count() > 0;
 }
 
-double DataReaderServer::getValue(const string &name) const {
-    dataLock.lock();
-    double val = values[name];
-    dataLock.unlock();
+double DataReaderServer::getValue(const string &name) {
+    _dataLock.lock();
+    double val = _paths[name];
+    _dataLock.unlock();
     return val;
 }
 
@@ -204,17 +184,13 @@ void DataSender::open() {
 
     bzero((char *) &address, sizeof(address));
     address.sin_family = AF_INET;
-    bcopy((char *) server->h_addr, (char *)&address.sin_addr.s_addr, server->h_length);
+    bcopy(server->h_addr, (char *)&address.sin_addr.s_addr, server->h_length);
     address.sin_port = htons(_port);
 
     if (connect(_socket, (sockaddr*) &address, sizeof(address)) < 0) {
         _clientFds.closeFds();
         throw SocketException("Failed connecting to server.");
     }
-}
-
-inline bool pathExists(const string& path) {
-    return path_set.count(path) > 0;
 }
 
 void DataSender::send(const string &path, double data) {
@@ -234,11 +210,12 @@ void DataSender::close() {
 }
 
 bool DataSender::isOpen() {
-    return _clientFds.count() > 0;
+    return _clientFds.count();
 }
 
 void DataTransfer::openDataServer(int port, int hz) {
-    delete _reader; // delete if needed(read from the internet - it's ok to delete a null pointer)
+    // close reader if needed
+    closeDataServer();
 
     _reader = new DataReaderServer(port, hz);
     _reader->open();
@@ -250,16 +227,11 @@ void DataTransfer::closeDataServer() {
 }
 
 void DataTransfer::openSender(int port, const string &remoteIp) {
-    delete _sender; // delete if needed
+    // close sender if needed
+    closeSender();
 
     _sender = new DataSender(port, remoteIp);
     _sender->open();
-
-    if (!_sender->isOpen()) {
-        delete _sender;
-        _sender = nullptr;
-        throw SocketException("Failed opening sender.");
-    }
 }
 
 void DataTransfer::closeSender() {

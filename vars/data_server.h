@@ -15,6 +15,19 @@ class DataReaderServer {
 private:
     int _port;
     int _hz;
+
+    FdList _fds;
+    unordered_map<string, double> _paths;
+    mutex _dataLock;
+
+    thread* _serverThread;
+
+    int openServer();
+    int connectClient(int server);
+    void readData(int client, int hz);
+
+    int readOneVar(int client);
+    void readOneSequence(int client);
 public:
     /**
      * Create a new data reader server.
@@ -41,7 +54,7 @@ public:
      * @param name the path of the value
      * @return the value
      */
-    double getValue(const string& name) const;
+    double getValue(const string& name);
 
     ~DataReaderServer() { close(); }
 };
