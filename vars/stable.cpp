@@ -9,8 +9,6 @@ public:
     virtual double get() { return _value; }
 
     virtual void set(double val) { _value = val; }
-
-    virtual void update(double val) { _value = val; }
 };
 
 class RemoteBoundVariable : public Variable {
@@ -19,19 +17,11 @@ private:
     string _bind;
 public:
     RemoteBoundVariable(DataTransfer& transfer, const string& bind) :
-            _transfer(transfer), _bind(bind) {
-    }
+            _transfer(transfer), _bind(bind) { }
 
-    virtual double get() {
-        return _transfer.getValue(_bind);
-    }
+    virtual double get() { return _transfer.getValue(_bind); }
 
-    // shouldn't update, only set
-    virtual void update(double d) { }
-
-    virtual void set(double val) {
-        _transfer.setValue(_bind, val);
-    }
+    virtual void set(double val) { _transfer.setValue(_bind, val); }
 };
 
 class VarBind : public Variable {
@@ -42,7 +32,6 @@ public:
     VarBind(Variable* v) : _bound(*v) { }
 
     virtual double get() { return _bound.get(); }
-    virtual void update(double val) { _bound.update(val); }
     virtual void set(double val) { _bound.set(val); }
 };
 

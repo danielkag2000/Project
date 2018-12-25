@@ -17,17 +17,12 @@ public:
     virtual double get() = 0;
 
     /**
-     * Update this variable without sending to the server
-     * (used when receiving data from server)
-     * @param val the new value
-     */
-    virtual void update(double val) = 0;
-
-    /**
      * Set the inner value of this variable.
      * @param val the new value
      */
     virtual void set(double val) = 0;
+
+    virtual ~Variable() { }
 };
 
 enum BindType {

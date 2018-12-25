@@ -100,7 +100,6 @@ int DataReaderServer::openServer() {
 int DataReaderServer::connectClient(int server) {
     int client = accept(server, nullptr, nullptr);
 
-    cout << "accepted" << endl;
     if (client < 0) {
         _fds.closeFds();
         throw SocketException("Failed connecting to client.");
@@ -111,7 +110,7 @@ int DataReaderServer::connectClient(int server) {
     return client;
 }
 
-void DataReaderServer:: readOneSequence(int client) {
+void DataReaderServer::readOneSequence(int client) {
     _dataLock.lock();
 
     for (const string& path : path_list) {

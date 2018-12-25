@@ -131,8 +131,6 @@ inline bool shouldUniteBind(vector<string>& words) {
     return !words.empty() && words.back() == "=";
 }
 
-vector<string> removeCommas(vector<string>& lexed);
-
 vector<string> uniteThings(vector<string>& v);
 
 vector<string> lexer(const string &line) {
@@ -183,15 +181,13 @@ vector<string> lexer(const string &line) {
     return uniteThings(words);
 }
 
-
-
 vector<string> uniteThings(vector<string>& v) {
     if (v.empty())
         return v;
 
     vector<string> united{v[0]};
 
-    for (int i = 1; i < v.size(); i++) {
+    for (unsigned int i = 1; i < v.size(); i++) {
         if ( (v[i] == "bind" && v[i - 1] == "=")
             || (v[i] == "-" && !isExpr(v[i - 1]))) {
             /*
@@ -207,16 +203,4 @@ vector<string> uniteThings(vector<string>& v) {
     }
 
     return united;
-}
-
-vector<string> removeCommas(vector<string>& lexed) {
-    vector<string> out;
-
-    for (string& s : lexed) {
-        if (s[0] != ',') {
-            out.push_back(s);
-        }
-    }
-
-    return out;
 }
