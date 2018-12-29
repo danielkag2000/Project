@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
 
     try {
 
-        if (argc == 20) {
+        if (argc == 2) {
             ifstream f(argv[1]);
             run_prog(f, ops, multi_line_op, costs, table);
 
